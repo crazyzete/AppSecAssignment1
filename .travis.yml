@@ -1,6 +1,6 @@
-before_install: sudo apt-get install check
+language: C
 
-install: make
+before_install: sudo apt-get install check
 
 compiler: gcc
 
