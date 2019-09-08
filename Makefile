@@ -11,6 +11,6 @@ spell.o : spell.c
 	gcc -c spell.c
 
 clean :
-	rm spell test_main.o dictionary.o spell.o 
+	rm -f spell test_main.o dictionary.o spell.o 
 
 
