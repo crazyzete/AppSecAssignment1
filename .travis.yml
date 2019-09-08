@@ -1,3 +1,5 @@
+before_install: sudo apt-get install check
+
 install: make
 
 compiler: gcc
