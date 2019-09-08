@@ -4,8 +4,10 @@ before_install: sudo apt-get install check
 
 compiler: gcc
 
+script: make
+
 install:
     - make clean
-    - make spell
+  
 
 
