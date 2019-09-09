@@ -1,11 +1,72 @@
+
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "dictionary.h"
+
+extern int hash_function(const char* word);
 
 /**
  * Returns true if all words are spelled correctly, false otherwise. Array misspelled is populated with words that are misspelled.
  */
 int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 
-	return 0;
+	int wrongCount = 0;
+	char readBuffer[500]; // Setting read bufffer max 500 chars. larger than a matchable word but just in case.	
+	
+	while (EOF != fscanf(fp, "%500s", readBuffer)) {
+		// Need to strip ending punctuation. Middile-punctuation may be a mis-spelling or correct,
+		// in teh case of '. While not in the test wordlist, a - could also be a valid char. But the key
+		// is to find cases where normal word ending punct such as a period, comma, exclaimation point, semicolin, colin,
+		// are read. 
+		
+		printf("READ BUFFFER: %s\n", readBuffer);
+		int charpos;
+		int firstAlphaLeft = -1;
+		int firstAlphaRight = -1;
+
+		// Strip left non-alpha and right non-alpha by finding the first alphabetic
+		// position from the left and the first alphabetic position from the right and
+		// writing that to a new string
+		for (charpos = 0; charpos <  strlen(readBuffer); charpos++) {
+		    if (isalpha(readBuffer[charpos])) {
+			firstAlphaLeft = charpos;
+			break;
+		    } // endif
+		} //end for
+
+		for (charpos = strlen(readBuffer) - 1; charpos >= 0; charpos--) {
+		    if (isalpha(readBuffer[charpos])) {
+			firstAlphaRight = charpos;
+			break;
+		    }
+		}
+
+		printf("First Alpha Left %d; First Alpha Right %d\n", firstAlphaLeft, firstAlphaRight);
+		// If there were no alphabetic characters, assume this is all numbers,
+		// all punctuation, or some combo of punct and numbers, and consider it
+		// spelled correctly by not searching the dictionary.
+		if (firstAlphaLeft >= 0) {
+			int bytesToCopy = (firstAlphaRight - firstAlphaLeft) + 1;
+			char * translateBuffer = malloc(strlen(readBuffer) + 1);
+			strncpy(translateBuffer, &readBuffer[firstAlphaLeft], bytesToCopy);
+			// Null Terminate
+			translateBuffer[bytesToCopy] = '\0';
+
+			if (!check_word(translateBuffer, hashtable)) {
+				misspelled[wrongCount++] = translateBuffer;	
+			} 
+			else {
+		   	     // Free translate buffer space if not adding it to the the mis-spelling
+		   	     // return list.
+		   	     free(translateBuffer);
+			}
+
+		}
+
+	}
+	
+	return wrongCount;
 }
 
 /**
@@ -13,7 +74,50 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
  */
 bool check_word(const char* word, hashmap_t hashtable[]) {
 
-	return false;
+	if ((NULL == word) || (NULL == hashtable)) {
+		printf("Hashmap or word is null\n");
+		return false; // don't accept null words/hash tables
+	}
+
+	hashmap_t hashes = hashtable[hash_function(word)];
+
+	if (NULL == hashes)  {
+		printf("No hashes for input word: %s, %d\n", word, hash_function(word));
+		return false; // No hash entry at this word's hash, so no match.
+	}
+
+	bool matchFound = false;
+	// Iterate through hashes looking for a match.
+	hashmap_t currentNode = hashes;
+	int equal;
+	while (NULL != currentNode->next) {
+		equal = strncmp(word, currentNode->word, strlen(currentNode->word));
+		if (0 == equal) {
+		    // word found
+		    matchFound = true;
+		    printf("MATCH for hash[%d] word[%s] dictionary[%s]\n", hash_function(word), word, currentNode->word);
+	            break;
+		} 
+		else {
+		   printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash_function(word), word, currentNode->word);
+		}
+	
+		currentNode = currentNode->next;
+	}
+
+	// Check the last node if a match hasn't been found.
+	if (!matchFound) {
+		equal = strncmp(word, currentNode->word, strlen(currentNode->word));
+		if (0 == equal) {
+	 	   // word found
+	 	   matchFound = true;
+		}
+		else {
+			 printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash_function(word), word, currentNode->word);
+		}
+	}
+
+	return matchFound;
 }
 
 /**
@@ -21,6 +125,67 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
  */
 bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 
-	return false;
+	// Unable to check hashtable size for smaller table on an array
+	// passed in. Assuming HASH_SIZE, may need to revisit.	
+
+	FILE *wordlist;
+	wordlist = fopen(dictionary_file, "r");
+
+ 	if(wordlist == NULL)
+  	 {
+      		return false;             
+   	}
+
+	// Init the hashtable with null pointers
+	int i;
+	for (i = 0; i < HASH_SIZE; i++) {
+		hashtable[i] = NULL;
+	}
+
+	char readword[LENGTH + 1];
+	int wordhash;
+	//while (fgets(readword, sizeof(readword), wordlist)) { 
+   	while (EOF != fscanf(wordlist, "%45s", readword)) {	
+		/*// replace \n will impact hash operations
+		if (readword[strlen(readword) - 1] == '\n')
+		    readword[strlen(readword) - 1] = '\0';
+		*/
+
+
+		// Hash word
+		wordhash = hash_function(readword);
+		
+		// Allocate a new node
+		hashmap_t newNode = (hashmap_t) malloc(sizeof(node));
+		newNode->next = NULL;
+		strncpy(newNode->word, readword, LENGTH);
+		
+
+
+		//printf("Word [%s] in hash[%d]\n", readword, wordhash);
+		
+		if (NULL == hashtable[wordhash]) {
+		    // Beginning of linked list
+		    hashtable[wordhash] = newNode;
+		}	
+		else {
+		    // Linked list for hash exits, insert at end.
+		    hashmap_t curPtr = hashtable[wordhash];
+		    hashmap_t nextPtr = curPtr->next;
+		    while (NULL != nextPtr) {
+			curPtr = nextPtr;
+			nextPtr = curPtr->next;
+		    } // end wile
+
+		    // At the end. Add it
+		    curPtr->next = newNode;
+
+		} // end else
+		
+	} // end while
+
+	fclose(wordlist);
+
+	return true;
 }
 
