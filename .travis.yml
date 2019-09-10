@@ -1,11 +1,15 @@
 language: C
 
-install: sudo apt-get install check
+before_install:
+    - sudo apt-get update
+    - sudo apt-get install -y check
 
 compiler: gcc
 
 script: 
-	- make all
+    - make all
+    - ./testspell
+
 
 
   
