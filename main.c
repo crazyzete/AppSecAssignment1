@@ -23,10 +23,10 @@ int main( int argc, const char* argv[] )
 	//char * misspelled[5000];
 	
 	bool loaded;
-	loaded = load_dictionary("wordlist.txt", hashtable);
+	loaded = load_dictionary(argv[2], hashtable);
 
 	FILE *text;
-	text = fopen("text.txt", "r");
+	text = fopen(argv[1], "r");
 
  	if(text == NULL)
   	 {
