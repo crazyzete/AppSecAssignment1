@@ -30,7 +30,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 	int wrongCount = 0;
 	char readBuffer[500]; // Setting read bufffer max 500 chars. larger than a matchable word but just in case.	
 	
-	while (EOF != fscanf(fp, "%500s", readBuffer)) {
+	while (0 < fscanf(fp, "%500s", readBuffer)) {
 		// Need to strip ending punctuation. Middile-punctuation may be a mis-spelling or correct,
 		// in teh case of '. While not in the test wordlist, a - could also be a valid char. But the key
 		// is to find cases where normal word ending punct such as a period, comma, exclaimation point, semicolin, colin,
@@ -168,7 +168,7 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 	char readword[LENGTH + 1];
 	int wordhash;
 	//while (fgets(readword, sizeof(readword), wordlist)) { 
-   	while (EOF != fscanf(wordlist, "%45s", readword)) {	
+   	while (0 < fscanf(wordlist, "%45s", readword)) {	
 
 		// Convert to lower. Do all checks against lowercase strings.
 		stringToLower(readword);
