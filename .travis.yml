@@ -4,8 +4,9 @@ install: sudo apt-get install check
 
 compiler: gcc
 
-script: make all
-script: ./testspell
+script: 
+	- make all
+	- ./testspell
 
   
 
