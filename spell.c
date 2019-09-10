@@ -6,6 +6,22 @@
 
 extern int hash_function(const char* word);
 
+// Convert the string, char by char, to lowercase
+void stringToLower(char * str) {
+
+	if (NULL != str) {
+
+		int len = strlen(str);
+
+		int pos;
+		for (pos = 0; pos < len; pos++) {
+			str[pos] = tolower(str[pos]);
+		}
+
+	}
+	
+}
+
 /**
  * Returns true if all words are spelled correctly, false otherwise. Array misspelled is populated with words that are misspelled.
  */
@@ -79,10 +95,17 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 		return false; // don't accept null words/hash tables
 	}
 
-	hashmap_t hashes = hashtable[hash_function(word)];
+	// Convert to lower. Do all checks against lowercase strings.
+	char lowerWord[strlen(word)]; 
+	sprintf(lowerWord, "%s", word); // copying string to not impact original stringg
+	stringToLower(lowerWord);
+
+	int hash = hash_function(lowerWord);
+
+	hashmap_t hashes = hashtable[hash];
 
 	if (NULL == hashes)  {
-		printf("No hashes for input word: %s, %d\n", word, hash_function(word));
+		printf("No hashes for input word: %s, %d\n", lowerWord, hash);
 		return false; // No hash entry at this word's hash, so no match.
 	}
 
@@ -91,15 +114,15 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 	hashmap_t currentNode = hashes;
 	int equal;
 	while (NULL != currentNode->next) {
-		equal = strncmp(word, currentNode->word, strlen(currentNode->word));
+		equal = strncmp(lowerWord, currentNode->word, strlen(currentNode->word));
 		if (0 == equal) {
 		    // word found
 		    matchFound = true;
-		    printf("MATCH for hash[%d] word[%s] dictionary[%s]\n", hash_function(word), word, currentNode->word);
+		    printf("MATCH for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 	            break;
 		} 
 		else {
-		   printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash_function(word), word, currentNode->word);
+		   printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 		}
 	
 		currentNode = currentNode->next;
@@ -107,13 +130,13 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 
 	// Check the last node if a match hasn't been found.
 	if (!matchFound) {
-		equal = strncmp(word, currentNode->word, strlen(currentNode->word));
+		equal = strncmp(lowerWord, currentNode->word, strlen(currentNode->word));
 		if (0 == equal) {
 	 	   // word found
 	 	   matchFound = true;
 		}
 		else {
-			 printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash_function(word), word, currentNode->word);
+			 printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 		}
 	}
 
@@ -146,11 +169,9 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 	int wordhash;
 	//while (fgets(readword, sizeof(readword), wordlist)) { 
    	while (EOF != fscanf(wordlist, "%45s", readword)) {	
-		/*// replace \n will impact hash operations
-		if (readword[strlen(readword) - 1] == '\n')
-		    readword[strlen(readword) - 1] = '\0';
-		*/
 
+		// Convert to lower. Do all checks against lowercase strings.
+		stringToLower(readword);
 
 		// Hash word
 		wordhash = hash_function(readword);
@@ -162,7 +183,7 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 		
 
 
-		//printf("Word [%s] in hash[%d]\n", readword, wordhash);
+		//printf("Word [%s] in hash[%d]\n", readWord, wordhash);
 		
 		if (NULL == hashtable[wordhash]) {
 		    // Beginning of linked list
