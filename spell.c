@@ -75,7 +75,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 
 			}
 
-			char * translateBuffer = malloc(strlen(readBuffer) + 1);
+			char * translateBuffer = malloc(LENGTH + 1);
 
 			strncpy(translateBuffer, &readBuffer[firstAlphaLeft], bytesToCopy);
 			// Null Terminate
