@@ -28,15 +28,17 @@ void stringToLower(char * str) {
 int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 
 	int wrongCount = 0;
-	char readBuffer[500]; // Setting read bufffer max 500 chars. larger than a matchable word but just in case.	
-	
-	while (0 < fscanf(fp, "%500s", readBuffer)) {
+		
+	char *readBuffer = NULL;
+
+	// m modifier automatically allocates sufficent memory
+	while (0 < fscanf(fp, "%ms", &readBuffer)) {
 		// Need to strip ending punctuation. Middile-punctuation may be a mis-spelling or correct,
 		// in teh case of '. While not in the test wordlist, a - could also be a valid char. But the key
 		// is to find cases where normal word ending punct such as a period, comma, exclaimation point, semicolin, colin,
 		// are read. 
 		
-		//printf("READ BUFFFER: %s\n", readBuffer);
+		printf("READ BUFFFER: %s\n", readBuffer);
 		int charpos;
 		int firstAlphaLeft = -1;
 		int firstAlphaRight = -1;
@@ -58,7 +60,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 		    }
 		}
 
-		//printf("First Alpha Left %d; First Alpha Right %d\n", firstAlphaLeft, firstAlphaRight);
+		printf("First Alpha Left %d; First Alpha Right %d\n", firstAlphaLeft, firstAlphaRight);
 		// If there were no alphabetic characters, assume this is all numbers,
 		// all punctuation, or some combo of punct and numbers, and consider it
 		// spelled correctly by not searching the dictionary.
@@ -69,7 +71,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 			// Null Terminate
 			translateBuffer[bytesToCopy] = '\0';
 
-			if (!check_word(translateBuffer, hashtable)) {
+			if ((strlen(translateBuffer) > LENGTH) || (!check_word(translateBuffer, hashtable))) {
 				misspelled[wrongCount++] = translateBuffer;	
 			} 
 			else {
@@ -80,6 +82,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 
 		}
 
+		free(readBuffer);
 	}
 	
 	return wrongCount;
@@ -91,7 +94,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 bool check_word(const char* word, hashmap_t hashtable[]) {
 
 	if ((NULL == word) || (NULL == hashtable)) {
-		//printf("Hashmap or word is null\n");
+		printf("Hashmap or word is null\n");
 		return false; // don't accept null words/hash tables
 	}
 
@@ -105,7 +108,7 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 	hashmap_t hashes = hashtable[hash];
 
 	if (NULL == hashes)  {
-		//printf("No hashes for input word: %s, %d\n", lowerWord, hash);
+		printf("No hashes for input word: %s, %d\n", lowerWord, hash);
 		return false; // No hash entry at this word's hash, so no match.
 	}
 
@@ -118,11 +121,11 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 		if (0 == equal) {
 		    // word found
 		    matchFound = true;
-		    //printf("MATCH for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
+		    printf("MATCH for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 	            break;
 		} 
 		else {
-		   //printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
+		   printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 		}
 	
 		currentNode = currentNode->next;
@@ -136,7 +139,7 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 	 	   matchFound = true;
 		}
 		else {
-			 //printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
+			 printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 		}
 	}
 
@@ -165,13 +168,23 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 		hashtable[i] = NULL;
 	}
 
-	char readword[LENGTH + 1];
+	char *rawReadWord = NULL;
 	int wordhash;
-	//while (fgets(readword, sizeof(readword), wordlist)) { 
-   	while (0 < fscanf(wordlist, "%45s", readword)) {	
+	
+	// m modifier automatically allocates sufficent memory
+   	while (0 < fscanf(wordlist, "%ms", &rawReadWord)) {	
 
+
+		char readword[LENGTH + 1];
+
+		// Copy up to the max length. Will truncate any word longer than the
+		// max word length.
+		strncpy(readword, rawReadWord, LENGTH);
+		
 		// Convert to lower. Do all checks against lowercase strings.
 		stringToLower(readword);
+
+		free(rawReadWord); // Free memory allocated by fscanf. Next loop will allocate more.
 
 		// Hash word
 		wordhash = hash_function(readword);
@@ -183,7 +196,7 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 		
 
 
-		//printf("Word [%s] in hash[%d]\n", readWord, wordhash);
+		//printf("Word [%s] in hash[%d]\n", readword, wordhash);
 		
 		if (NULL == hashtable[wordhash]) {
 		    // Beginning of linked list
