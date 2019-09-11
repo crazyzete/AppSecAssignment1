@@ -43,9 +43,9 @@ int main( int argc, const char* argv[] )
 	printf("Spelling Errors: %d\n", errors);
 
 	int i;
-	//for (i = 0; i < errors; i++) {
-	//	printf("Misspelled: %s\n", spellErrors[i]);
-	//}
+	for (i = 0; i < errors; i++) {
+		printf("Misspelled: %s\n", spellErrors[i]);
+	}
 
 	/*
 	if (loaded) {

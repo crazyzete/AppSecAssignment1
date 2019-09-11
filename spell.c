@@ -38,7 +38,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 		// is to find cases where normal word ending punct such as a period, comma, exclaimation point, semicolin, colin,
 		// are read. 
 		
-		//printf("READ BUFFFER: %s\n", readBuffer);
+		printf("READ BUFFFER: %s\n", readBuffer);
 		int charpos;
 		int firstAlphaLeft = -1;
 		int firstAlphaRight = -1;
@@ -60,21 +60,31 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 		    }
 		}
 
-		//printf("First Alpha Left %d; First Alpha Right %d\n", firstAlphaLeft, firstAlphaRight);
+		printf("First Alpha Left %d; First Alpha Right %d\n", firstAlphaLeft, firstAlphaRight);
 		// If there were no alphabetic characters, assume this is all numbers,
 		// all punctuation, or some combo of punct and numbers, and consider it
 		// spelled correctly by not searching the dictionary.
 		if (firstAlphaLeft >= 0) {
 			int bytesToCopy = (firstAlphaRight - firstAlphaLeft) + 1;
+
+			bool truncated = false;
+			if (bytesToCopy > LENGTH) {
+				// Too large of a word. Dont' check spelling copy ony LENGTH
+				bytesToCopy = LENGTH;
+				truncated = true;
+
+			}
+
 			char * translateBuffer = malloc(strlen(readBuffer) + 1);
+
 			strncpy(translateBuffer, &readBuffer[firstAlphaLeft], bytesToCopy);
 			// Null Terminate
 			translateBuffer[bytesToCopy] = '\0';
 
-			if ((strlen(translateBuffer) > LENGTH) || (!check_word(translateBuffer, hashtable))) {
-			    if (wrongCount < 20) {
+			if (truncated || (!check_word(translateBuffer, hashtable))) {
+	
 				misspelled[wrongCount++] = translateBuffer;
-			    }	
+			    
 			} 
 			else {
 		   	     // Free translate buffer space if not adding it to the the mis-spelling
@@ -96,7 +106,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 bool check_word(const char* word, hashmap_t hashtable[]) {
 
 	if ((NULL == word) || (NULL == hashtable)) {
-		//printf("Hashmap or word is null\n");
+		printf("Hashmap or word is null\n");
 		return false; // don't accept null words/hash tables
 	}
 
@@ -110,7 +120,7 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 	hashmap_t hashes = hashtable[hash];
 
 	if (NULL == hashes)  {
-		//printf("No hashes for input word: %s, %d\n", lowerWord, hash);
+		printf("No hashes for input word: %s, %d\n", lowerWord, hash);
 		return false; // No hash entry at this word's hash, so no match.
 	}
 
@@ -123,11 +133,11 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 		if (0 == equal) {
 		    // word found
 		    matchFound = true;
-		    //printf("MATCH for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
+		    printf("MATCH for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 	            break;
 		} 
 		else {
-		   //printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
+		   printf("No match for hash[%d] word[%s] dictionary[%s]\n", hash, lowerWord, currentNode->word);
 		}
 	
 		currentNode = currentNode->next;
