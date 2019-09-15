@@ -185,6 +185,9 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
       		return false;             
    	}
 
+	// Have to assume caller sized hashtable appropriately. There is no way at runtime
+	// in C to determine the sizeof hashtable array within the function. 
+
 	// Init the hashtable with null pointers
 	int i;
 	for (i = 0; i < HASH_SIZE; i++) {
