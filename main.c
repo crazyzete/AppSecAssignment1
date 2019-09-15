@@ -47,56 +47,28 @@ int main( int argc, const char* argv[] )
 		printf("Misspelled: %s\n", spellErrors[i]);
 	}
 
-	/*
-	if (loaded) {
-		printf("load_dictionary success!\n");
-
-		// iterate check hashmap
-		int hashiter;
-		int totalWC = 0;
+	// Cleanup (remove valgrind errors)
+	for (i = 0; i < errors; i++) {
+		free(spellErrors[i]);
+	}
 	
-		for (hashiter = 0; hashiter < HASH_SIZE; hashiter++) {
-			if (hashtable[hashiter] == NULL) {
-				printf("HashMap %d = %d\n", hashiter, 0);
-				continue;			
-			} 
-			else {
-			   hashmap_t cur = hashtable[hashiter];
-			   int hashWordCount = 1;
-			   while (cur->next != NULL) {
-				//printf("hash %d, word: %s", hashiter, cur->word);
-				cur = cur->next;
-				hashWordCount++;
-			   }
-			  printf("hash %d, word: %s", hashiter, cur->word);
-			  //printf("HashMap %d = %d\n", hashiter, hashWordCount);
-			  totalWC = totalWC + hashWordCount;
-			}
+	for (i = 0; i < HASH_SIZE; i++) {
+
+		if (NULL != hashtable[i]) {
+
+			hashmap_t currentNode = hashtable[i];
+			hashmap_t nextNode;
+	
+			do {
+				nextNode = currentNode->next;
+				free(currentNode);
+				currentNode = nextNode;
+
+			} while (NULL != currentNode);
 		}
-
-		printf("Total word count in hashmap is %d\n", totalWC);
 	}
-	else {
-		printf("load_dictionary fail!\n");
-	}	
 
-	bool correct = check_word("Justice", hashtable);
-	
-	printf("Word Check: %d\n", correct);
-	*/
-
-	/*int correct;
-	correct = check_words(wordlist, hasht, misspelled);
-
-	if (correct) {
-		printf("All words spelled correctly\n");
-	}
-	else {
-		printf("There were misspellings\n");
-	}
-	*/
-
-	//fclose(wordlist);
+		
 
 
 	printf("End Main\n");

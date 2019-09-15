@@ -4,8 +4,6 @@
 #include <ctype.h>
 #include "dictionary.h"
 
-extern int hash_function(const char* word);
-
 // Convert the string, char by char, to lowercase
 void stringToLower(char * str) {
 
