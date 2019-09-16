@@ -92,6 +92,100 @@ START_TEST(test_dictionary_word_overflow)
 }
 END_TEST
 
+START_TEST(test_dictionary_normal_buckets)
+{
+    hashmap_t hashtable[HASH_SIZE];
+
+    const int NUM_WORDS = 4;
+    char * word[] = {"see", "spot", "run", "tops"};
+   
+    // Create temp dictionary and write 4 words to itj.
+    FILE *fp = fopen(TEMPDICT, "w"); 
+	if (NULL != fp) {
+		int i;
+		for (i = 0; i < NUM_WORDS; i++)
+		    fprintf(fp, "%s\n", word[i]);
+		fclose(fp);
+	}
+
+    ck_assert(load_dictionary(TEMPDICT, hashtable));
+
+    // Remove temp dict file
+    remove(TEMPDICT);
+
+    int hash[NUM_WORDS];
+    int i;
+    for (i = 0; i < NUM_WORDS; i++)
+	hash[i] = hash_function(word[i]);
+
+    hashmap_t word1Node = hashtable[hash[0]];
+    hashmap_t word2Node = hashtable[hash[1]]; // Should be same as 4
+    hashmap_t word3Node = hashtable[hash[2]];
+    hashmap_t word4Node = hashtable[hash[3]]; // Should be same as 2
+
+    // Check these 3 hash nodes aren't null
+    ck_assert(NULL != word1Node);
+    ck_assert(NULL != word2Node);
+    ck_assert(NULL != word3Node);
+    ck_assert(NULL != word4Node);
+
+    // Check that the next pointer correctly initialized to null
+    ck_assert(NULL == word1Node->next);
+    ck_assert(NULL == word3Node->next);
+
+    // Check that Word 2 and Word 4 hashed to the same bucket
+    ck_assert(word2Node == word4Node);
+
+    // Check that the correct words are stored in buckets
+    ck_assert_msg(strncmp(word1Node->word, word[0], LENGTH) == 0);	
+    ck_assert_msg(strncmp(word2Node->word, word[1], LENGTH) == 0);
+    ck_assert_msg(strncmp(word3Node->word, word[2], LENGTH) == 0);
+    ck_assert_msg(strncmp(word4Node->next->word, word[3], LENGTH) == 0); // Check 2nd entry list in bucket
+
+    
+
+}
+END_TEST
+
+START_TEST(test_dictionary_normal_mixed_case)
+{
+    hashmap_t hashtable[HASH_SIZE];
+
+    char * word[] = {"ANOTHER", "One", "BiTeS", "thE", "DUst", "i'LL", "BE", "bAcK"};
+    char * expected[] = {"another", "one", "bites", "the", "dust", "i'll", "be", "back"};
+
+    const int NUM_WORDS = sizeof(word) / sizeof(word[0]);
+   
+    // Create temp dictionary and write words to it
+    FILE *fp = fopen(TEMPDICT, "w"); 
+	if (NULL != fp) {
+		int i;
+		for (i = 0; i < NUM_WORDS; i++)
+		    fprintf(fp, "%s\n", word[i]);
+		fclose(fp);
+	}
+
+    ck_assert(load_dictionary(TEMPDICT, hashtable));
+
+    // Remove temp dict file
+    remove(TEMPDICT);
+
+    int hash[NUM_WORDS];
+    hashmap_t nodes[NUM_WORDS];
+    int i;
+    for (i = 0; i < NUM_WORDS; i++) {
+	hash[i] = hash_function(expected[i]);
+        nodes[i] = hashtable[hash[i]];
+        ck_assert(NULL != nodes[i]);   // Check that node i is not null
+        ck_assert_msg(strncmp(nodes[i]->word, expected[i], LENGTH) == 0); // Check work is lowercase representation of expected
+        ck_assert(NULL == nodes[i]->next); // Check the node list for that hash has no other nodes.
+    }
+    
+
+}
+END_TEST
+
+
 START_TEST(test_check_word_normal)
 {
     hashmap_t hashtable[HASH_SIZE];
@@ -189,6 +283,8 @@ load_dictionary_suite(void)
     tcase_add_test(check_dict_case, test_dictionary_file_not_found);
     tcase_add_test(check_dict_case, test_dictionary_null_filename);
     tcase_add_test(check_dict_case, test_dictionary_word_overflow);
+    tcase_add_test(check_dict_case, test_dictionary_normal_buckets);
+    tcase_add_test(check_dict_case, test_dictionary_normal_mixed_case);
     suite_add_tcase(suite, check_dict_case);
 
     return suite;
