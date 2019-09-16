@@ -199,6 +199,68 @@ START_TEST(test_check_word_normal)
 END_TEST
 
 /**
+  This tests check_word handling of leading and trailing punctuation. Leading and trailing punctuation should
+  be stripped by check_words. check_word merely converts to lowercase and checks the dictionary, so leading and
+  trailing punctuation should fail. Certain middle punct such as apostrophe should pass.
+*/
+START_TEST(test_check_word_leading_trailing_punct)
+{
+    hashmap_t hashtable[HASH_SIZE];
+    load_dictionary(DICTIONARY, hashtable);
+    char * correctEmbeddedPunct[] = {"I'll", "we'll","we'd","you're","can't","that's", "quadrilateral's"};
+    char * incorrectPunct[] = {",duck","?duck","duck,","duck!","duck.","d'uck","re-use"};
+    const int CHECK_SIZE = sizeof(correctEmbeddedPunct)/sizeof(correctEmbeddedPunct[0]);
+    
+
+    int i;
+    for (i = 0; i < CHECK_SIZE; i++) {
+	 ck_assert(check_word(correctEmbeddedPunct[i], hashtable));
+         ck_assert(!check_word(incorrectPunct[i], hashtable));
+    }
+
+}
+END_TEST
+
+/**
+  This tests check_word handling of numbers. Numbers should be stripped out prior to check_word and should not be in the
+  dictionary, so all leading, trailing, and embedded numbers should fail, including all numerics - should be handled
+  by check_word.
+*/
+START_TEST(test_check_word_numerics)
+{
+    hashmap_t hashtable[HASH_SIZE];
+    load_dictionary(DICTIONARY, hashtable);
+    char * incorrect[] = {"1duck","2duck3","4du5ck6,","11duck22","123456","789ad","-123456","bc1200","a12345b"};
+    const int CHECK_SIZE = sizeof(incorrect)/sizeof(incorrect);
+    
+
+    int i;
+    for (i = 0; i < CHECK_SIZE; i++) {
+         ck_assert(!check_word(incorrect[i], hashtable));
+    }
+
+}
+END_TEST
+
+/**
+  This tests check_word handling of numbers NULL input parameters.
+*/
+START_TEST(test_check_word_null_inputs)
+{
+    hashmap_t hashtable[HASH_SIZE];
+    load_dictionary(DICTIONARY, hashtable);
+    char * word = "duck";
+    
+	
+    ck_assert(!check_word(word, NULL));
+    ck_assert(!check_word(NULL, hashtable));
+    ck_assert(!check_word(NULL, NULL));
+    
+
+}
+END_TEST
+
+/**
  This test uses check_words to veriffy a single word with multiple punctuation marks before the word results in
  the punctuation stripped and no misspellings.
 */
@@ -253,6 +315,9 @@ check_word_suite(void)
     suite = suite_create("check_word");
     check_word_case = tcase_create("Core");
     tcase_add_test(check_word_case, test_check_word_normal);
+    tcase_add_test(check_word_case, test_check_word_leading_trailing_punct);
+    tcase_add_test(check_word_case, test_check_word_numerics);
+    tcase_add_test(check_word_case, test_check_word_null_inputs);
     suite_add_tcase(suite, check_word_case);
 
     return suite;
