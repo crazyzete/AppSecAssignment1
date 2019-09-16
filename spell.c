@@ -31,21 +31,39 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 	char * dumpBuffer = NULL;
 
 	// m modifier automatically allocates sufficent memory
-	while (0 < fscanf(fp, "%200ms", &readBuffer)) {
+	while (0 < fscanf(fp, "%100ms", &readBuffer)) {
 		// Need to strip ending punctuation. Middile-punctuation may be a mis-spelling or correct,
 		// in teh case of '. While not in the test wordlist, a - could also be a valid char. But the key
 		// is to find cases where normal word ending punct such as a period, comma, exclaimation point, semicolin, colin,
 		// are read. 
 		
-		if (strlen(readBuffer) == 200) {
-			while (0 < fscanf(fp, "%200ms", &dumpBuffer)) {
-				if (strlen(dumpBuffer) < 200)
-					break;
+		//printf("Read: %s\n", readBuffer);
+		if (strlen(readBuffer) == 100) {
+
+			// Not sure if last next char is a word terminator. Read it and seek back 1 position.
+			char nextChar = fgetc(fp);
+			fseek(fp,ftell(fp)-1,0); // set file pointer back 1 position. This is like a peek.
+
+			if (nextChar != '\n' && nextChar != ' ') {
+			
+			     while (0 < fscanf(fp, "%100ms", &dumpBuffer)) {
+				     if (strlen(dumpBuffer) < 100)
+					     break;
+				     else if (strlen(dumpBuffer) == 100) {
+					// Need to ensure this last read didn't fill up the bufer and hit the end of the word.
+					char next = fgetc(fp);    // peek forward
+					fseek(fp, ftell(fp)-1,0); // seek back one
+					if (next == '\n' || next == ' ')
+						break;
+
+				     }
 //printf("Dump Buffer\n");
-				free(dumpBuffer);
+				     free(dumpBuffer);
+			     }
+			     //printf("Done dumping buffers\n");
+			     free(dumpBuffer);
+
 			}
-			//printf("Done dumping buffers\n");
-			free(dumpBuffer);
 		}
 		
 		//printf("READ BUFFFER: %s\n", readBuffer);
