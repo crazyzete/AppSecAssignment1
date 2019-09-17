@@ -249,7 +249,26 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 		    curPtr->next = newNode;
 
 		} // end else
-		
+
+		// Need to determine if more chars on line and discard. if read less than 45 chars, still can be spaces
+		// and more chars. discard anything on a line after 45 chars.
+		// Not sure if last next char is a word terminator. Read it and seek back 1 position.
+		char * dumpBuffer = NULL;
+
+		char nextChar = fgetc(wordlist); // peek
+		fseek(wordlist,ftell(wordlist)-1,0); // set file pointer back 1 position. This is like a peek.
+
+		if (nextChar != '\n') {
+			while (0 < fscanf(wordlist, "%500ms", &dumpBuffer)) {
+			    char next = fgetc(wordlist);    // peek forward
+			    fseek(wordlist, ftell(wordlist)-1,0); // seek back one
+			    free(dumpBuffer);
+			    if (next == '\n') 
+				break;
+			     } // end while
+
+		}  // end if
+
 	} // end while
 
 	fclose(wordlist);
