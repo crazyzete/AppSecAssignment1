@@ -356,7 +356,7 @@ START_TEST(test_check_words_hundred_char_multiple_one_word)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		const int CHAR_COUNT = 200;
 		for (int i = 0; i < CHAR_COUNT; i++) 
@@ -370,6 +370,8 @@ START_TEST(test_check_words_hundred_char_multiple_one_word)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
+	else
+	   ck_assert(NULL != fp);
 	
 }
 END_TEST
@@ -386,7 +388,7 @@ START_TEST(test_check_words_hundred_char_multiple_two_word)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		const int CHAR_COUNT = 200;
 		for (int i = 0; i < CHAR_COUNT-1; i++) {
@@ -404,7 +406,8 @@ START_TEST(test_check_words_hundred_char_multiple_two_word)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
-	
+	else
+	   ck_assert(NULL != fp);
 }
 END_TEST
 
@@ -419,7 +422,7 @@ START_TEST(test_check_words_before_punct)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		fprintf(fp, "%s", ",(hello");
 		rewind(fp); // Set file pointer back to start.
@@ -430,6 +433,8 @@ START_TEST(test_check_words_before_punct)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
+	else
+	   ck_assert(NULL != fp);
 	
 }
 END_TEST
@@ -445,7 +450,7 @@ START_TEST(test_check_words_after_punct)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		fprintf(fp, "%s", "hello?!?,");
 		rewind(fp); // Set file pointer back to start.
@@ -456,6 +461,8 @@ START_TEST(test_check_words_after_punct)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
+	else
+	   ck_assert(NULL != fp);
 	
 }
 END_TEST
@@ -471,7 +478,7 @@ START_TEST(test_check_words_before_and_after_punct)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		fprintf(fp, "%s", ",(----hello----)?!.");
 		rewind(fp); // Set file pointer back to start.
@@ -482,6 +489,8 @@ START_TEST(test_check_words_before_and_after_punct)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
+	else
+	   ck_assert(NULL != fp);
 	
 }
 END_TEST
@@ -496,7 +505,7 @@ START_TEST(test_check_words_numeric)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		fprintf(fp, "%s", "$100,000 50.75 -109.3 -$80.234 3.14159 -56.35E65 -2 0 0.00 12345,67890 59.65%");
 		rewind(fp); // Set file pointer back to start.
@@ -507,6 +516,8 @@ START_TEST(test_check_words_numeric)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
+	else
+	   ck_assert(NULL != fp);
 	
 }
 END_TEST
@@ -521,7 +532,7 @@ START_TEST(test_check_words_non_alphanumeric)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		fprintf(fp, "%s", "$$ / - ()^&% % -- ******** '' '' @# ^& == ~`-_++/,. <> ; '");
 		rewind(fp); // Set file pointer back to start.
@@ -532,6 +543,8 @@ START_TEST(test_check_words_non_alphanumeric)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
+	else
+	   ck_assert(NULL != fp);
 	
 }
 END_TEST
@@ -546,7 +559,7 @@ START_TEST(test_check_words_special)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
 	if (NULL != fp) {
 		unsigned char theChar;
 		// Loop and write a byte followed by a space. Loop through all 1 byte values.
@@ -562,6 +575,8 @@ START_TEST(test_check_words_special)
 		fclose(fp);
 		remove(TEMPINPUT);
 	}
+	else
+	   ck_assert(NULL != fp);
 	
 }
 END_TEST
@@ -576,22 +591,27 @@ START_TEST(test_check_words_special_misspell)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen(TEMPINPUT, "rw"); 
-	if (NULL != fp) {
-		unsigned char theChar;
-		// Loop and write a byte followed by a space. Loop through all 1 byte values.
-		for (unsigned int i = 0; i < 255; i++) {
-		     theChar = i;
-		     fprintf(fp, "%cWelcome%c\n ", theChar);
+
+	     FILE *fp = fopen(TEMPINPUT, "w+"); 
+	
+	     if (NULL != fp) {
+		for (unsigned int i = 1; i < 256; i++) {
+	   	     unsigned char theChar = i;
+		     fprintf(fp, "%c%s%c\n ", theChar, "Welcame", theChar);
 		}
 		rewind(fp); // Set file pointer back to start.
 
 		int num_misspelled = check_words(fp, hashtable, misspelled);
-		ck_assert(num_misspelled == 256);
+                ck_assert_msg(255 == num_misspelled);
+
 
 		fclose(fp);
 		remove(TEMPINPUT);
-	}
+	     }
+	     else
+	        ck_assert(NULL != fp);
+	
+	
 	
 }
 END_TEST
