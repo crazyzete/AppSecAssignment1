@@ -9,6 +9,7 @@
 #define TESTDICT "test_wordlist.txt"
 #define BOGUSDICT "bogus.txt"
 #define TEMPDICT "temp_dict.txt"
+#define TEMPINPUT "test_tmp.txt"
 
 START_TEST(test_dictionary_load_only)
 {
@@ -91,6 +92,89 @@ START_TEST(test_dictionary_word_overflow)
 
 }
 END_TEST
+
+/**
+   This test verifies that a longe word is truncated and not just split and added to dictionary as multiple words.
+   Assumes the code is reading blocks of 45 char.
+*/
+START_TEST(test_dictionary_long_word_truncate)
+{
+    hashmap_t hashtable[HASH_SIZE];
+
+    const char * longword1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+    const char * word1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+   
+    // Create temp dictionary and write 1 long word
+    FILE *fp = fopen(TEMPDICT, "w"); 
+	if (NULL != fp) {
+		fprintf(fp, "%s\n", longword1);
+		fclose(fp);
+	}
+
+    ck_assert(load_dictionary(TEMPDICT, hashtable));
+
+    // Remove temp dict file
+    remove(TEMPDICT);
+
+    // Confirm only 1 word in hash table and it matches hash of word1
+    int hash1 = hash_function(word1);
+    hashmap_t word1Node = hashtable[hash1];
+    ck_assert(NULL != word1Node);
+  
+    // Count all the words in dict
+    int wordCount = 0;
+    for (int i = 0; i < HASH_SIZE; i++)
+	if (NULL != hashtable[i])
+		wordCount++;
+
+    ck_assert_int_eq(1, wordCount);
+
+}
+END_TEST
+
+/**
+   This test verifies that characters after a space on a line are truncated, not considered seperate words if there is no newline.
+*/
+START_TEST(test_dictionary_truncate_after_space)
+{
+    hashmap_t hashtable[HASH_SIZE];
+
+    const char * line1 = "the big brown cat is here";  // 6 words, but only 'the' gets counted on the line.
+    const char * line2 = "sorry i am not counted";     // only 'sorry' is counted
+    const char * word1 = "the";
+    const char * word2 = "sorry";
+   
+    // Create temp dictionary and write 2 lines
+    FILE *fp = fopen(TEMPDICT, "w"); 
+	if (NULL != fp) {
+		fprintf(fp, "%s\n%s\n", line1, line2);
+		fclose(fp);
+	}
+
+    ck_assert(load_dictionary(TEMPDICT, hashtable));
+
+    // Remove temp dict file
+    remove(TEMPDICT);
+
+    // Confirm only 2word in hash table and it matches hash of word1 and word2
+    int hash1 = hash_function(word1);
+    int hash2 = hash_function(word2);
+    hashmap_t word1Node = hashtable[hash1];
+    hashmap_t word2Node = hashtable[hash2];
+    ck_assert(NULL != word1Node);
+    ck_assert(NULL != word2Node);
+  
+    // Count all the words in dict
+    int wordCount = 0;
+    for (int i = 0; i < HASH_SIZE; i++)
+	if (NULL != hashtable[i])
+		wordCount++;
+
+    ck_assert_int_eq(2, wordCount);
+
+}
+END_TEST
+
 
 START_TEST(test_dictionary_normal_buckets)
 {
@@ -261,7 +345,71 @@ START_TEST(test_check_word_null_inputs)
 END_TEST
 
 /**
- This test uses check_words to veriffy a single word with multiple punctuation marks before the word results in
+ This test checks a specific cases with 200 character strings. My code reads in up to 100 charactes and then continues to read blocks o
+ 100 and throw them away, however, it needs to inspect the next character to determine if it is at a word boundary or not. This is testing
+ a specific case i knew I had and already fixed. This verifies 200 characters with a space in the middle is 1 word.
+*/
+START_TEST(test_check_words_hundred_char_multiple_one_word)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		const int CHAR_COUNT = 200;
+		for (int i = 0; i < CHAR_COUNT; i++) 
+		     fprintf(fp, "%c", 'a');
+		fprintf(fp,"%c",'\n');
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 1); // one long string of a's should be misspelled
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test checks a specific cases with 200 character strings. My code reads in up to 100 charactes and then continues to read blocks o
+ 100 and throw them away, however, it needs to inspect the next character to determine if it is at a word boundary or not. This is testing
+ a specific case i knew I had and already fixed. This verified 200 characters with a space in the middle is 2 words.
+*/
+START_TEST(test_check_words_hundred_char_multiple_two_word)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		const int CHAR_COUNT = 200;
+		for (int i = 0; i < CHAR_COUNT-1; i++) {
+		     if ((CHAR_COUNT/2 == i)) 
+			fprintf(fp, "%c",' ');
+		     else
+			fprintf(fp, "%c", 'a');
+		}	
+		fprintf(fp,"%c",'\n');
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 2); // one long string of a's should be misspelled
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test uses check_words to verify a single word with multiple punctuation marks before the word results in
  the punctuation stripped and no misspellings.
 */
 START_TEST(test_check_words_before_punct)
@@ -271,7 +419,7 @@ START_TEST(test_check_words_before_punct)
 	char *misspelled[MAX_MISSPELLED];
 	// Rather than a bunch of input files, lets dynamically write the file.
 	// This will open file for read/write, write a test string, and the program will read that string.
-	FILE *fp = fopen("test_tmp.txt", "rw"); 
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
 	if (NULL != fp) {
 		fprintf(fp, "%s", ",(hello");
 		rewind(fp); // Set file pointer back to start.
@@ -280,6 +428,169 @@ START_TEST(test_check_words_before_punct)
 		ck_assert(num_misspelled == 0);
 
 		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test uses check_words to verify a single word with multiple punctuation marks after the word results in
+ the punctuation stripped and no misspellings.
+*/
+START_TEST(test_check_words_after_punct)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		fprintf(fp, "%s", "hello?!?,");
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 0);
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test uses check_words to verify a single word with multiple punctuation marks after the word results in
+ the punctuation stripped and no misspellings.
+*/
+START_TEST(test_check_words_before_and_after_punct)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		fprintf(fp, "%s", ",(----hello----)?!.");
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 0);
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test uses check_words to verify several numeric values passes.
+*/
+START_TEST(test_check_words_numeric)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		fprintf(fp, "%s", "$100,000 50.75 -109.3 -$80.234 3.14159 -56.35E65 -2 0 0.00 12345,67890 59.65%");
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 0);
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test uses check_words to verify several non-alphanmeric passes.
+*/
+START_TEST(test_check_words_non_alphanumeric)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		fprintf(fp, "%s", "$$ / - ()^&% % -- ******** '' '' @# ^& == ~`-_++/,. <> ; '");
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 0);
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test uses check_words to verify several special characters.
+*/
+START_TEST(test_check_words_special)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		unsigned char theChar;
+		// Loop and write a byte followed by a space. Loop through all 1 byte values.
+		for (unsigned int i = 0; i < 255; i++) {
+		     theChar = i;
+		     fprintf(fp, "%c ", theChar);
+		}
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 0);
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	
+}
+END_TEST
+
+/**
+ This test uses check_words to verify several special characters surrounding a misspelled word still detect the misspelling.
+*/
+START_TEST(test_check_words_special_misspell)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "rw"); 
+	if (NULL != fp) {
+		unsigned char theChar;
+		// Loop and write a byte followed by a space. Loop through all 1 byte values.
+		for (unsigned int i = 0; i < 255; i++) {
+		     theChar = i;
+		     fprintf(fp, "%cWelcome%c\n ", theChar);
+		}
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert(num_misspelled == 256);
+
+		fclose(fp);
+		remove(TEMPINPUT);
 	}
 	
 }
@@ -331,7 +642,15 @@ check_words_suite(void)
     suite = suite_create("check_words");
     check_words_case = tcase_create("Core");
     tcase_add_test(check_words_case, test_check_words_normal);
+    tcase_add_test(check_words_case, test_check_words_numeric);
+    tcase_add_test(check_words_case, test_check_words_non_alphanumeric);
     tcase_add_test(check_words_case, test_check_words_before_punct);
+    tcase_add_test(check_words_case, test_check_words_after_punct);
+    tcase_add_test(check_words_case, test_check_words_before_and_after_punct);
+    tcase_add_test(check_words_case, test_check_words_hundred_char_multiple_one_word);
+    tcase_add_test(check_words_case, test_check_words_hundred_char_multiple_two_word);
+    tcase_add_test(check_words_case, test_check_words_special);
+    tcase_add_test(check_words_case, test_check_words_special_misspell);
     suite_add_tcase(suite, check_words_case);
 
     return suite;
@@ -350,6 +669,8 @@ load_dictionary_suite(void)
     tcase_add_test(check_dict_case, test_dictionary_word_overflow);
     tcase_add_test(check_dict_case, test_dictionary_normal_buckets);
     tcase_add_test(check_dict_case, test_dictionary_normal_mixed_case);
+    tcase_add_test(check_dict_case, test_dictionary_long_word_truncate);
+    tcase_add_test(check_dict_case, test_dictionary_truncate_after_space);
     suite_add_tcase(suite, check_dict_case);
 
     return suite;
