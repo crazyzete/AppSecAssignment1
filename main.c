@@ -22,8 +22,12 @@ int main( int argc, const char* argv[] )
 	//hashmap_t hasht[HASH_SIZE];
 	//char * misspelled[5000];
 	
-	bool loaded;
-	loaded = load_dictionary(argv[2], hashtable);
+	bool loaded = load_dictionary(argv[2], hashtable);
+
+	if (!loaded) {
+	    printf("Failed to load dictionary\n");
+	    return -1;
+	}
 
 	FILE *text;
 	text = fopen(argv[1], "r");
