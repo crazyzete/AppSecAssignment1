@@ -1,20 +1,20 @@
 testspell : test_main.o dictionary.o spell.o 
-	gcc -o testspell test_main.o dictionary.o spell.o -lcheck_pic -lpthread -lrt -lm -lsubunit
+	gcc -Wall -o testspell test_main.o dictionary.o spell.o -lcheck_pic -lpthread -lrt -lm -lsubunit
 
 spell: main.o dictionary.o spell.o
-	gcc -o spell main.o dictionary.o spell.o
+	gcc -Wall -o spell main.o dictionary.o spell.o
 
 test_main.o : test_main.c 
-	gcc -c test_main.c
+	gcc -Wall -c test_main.c
 
 dictionary.o : dictionary.c 
-	gcc -c dictionary.c
+	gcc -Wall -c dictionary.c
 
 spell.o : spell.c 
-	gcc -c spell.c
+	gcc -Wall -c spell.c
 
 main.o : main.c
-	gcc -c main.c
+	gcc -Wall -c main.c
 
 clean :
 	rm -f spell main.o dictionary.o spell.o
