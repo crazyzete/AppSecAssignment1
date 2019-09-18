@@ -104,6 +104,8 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 			}
 
 			char * translateBuffer = malloc(LENGTH + 1);
+			if (NULL == translateBuffer)
+				return false;
 
 			strncpy(translateBuffer, &readBuffer[firstAlphaLeft], bytesToCopy);
 			// Null Terminate
@@ -144,7 +146,7 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 	sprintf(lowerWord, "%s", word); // copying string to not impact original stringg
 	stringToLower(lowerWord);
 
-	int hash = hash_function(lowerWord);
+	int hash = abs(hash_function(lowerWord));   // added abs() after fuzzer test showed negative hash possible
 
 	hashmap_t hashes = hashtable[hash];
 
@@ -221,10 +223,12 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 		stringToLower(readword);
 
 		// Hash word
-		wordhash = hash_function(readword);
+		wordhash = abs(hash_function(readword));	// added abs() per fuzzer crash. neg hash possible.
 		
 		// Allocate a new node
 		hashmap_t newNode = (hashmap_t) malloc(sizeof(node));
+		if (NULL == newNode)
+			return false;
 		newNode->next = NULL;
 		strncpy(newNode->word, readword, LENGTH);
 		
