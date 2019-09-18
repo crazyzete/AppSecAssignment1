@@ -582,9 +582,9 @@ START_TEST(test_check_words_special)
 END_TEST
 
 /**
- This test uses check_words to verify several special characters surrounding a misspelled word still detect the misspelling.
+ This test uses check_words to verify several special characters surrounding a correctly word do not cause the word to be incorrectly reported as misspelled.
 */
-START_TEST(test_check_words_special_misspell)
+START_TEST(test_check_words_special_correct)
 {
 	hashmap_t hashtable[HASH_SIZE];
 	load_dictionary(DICTIONARY, hashtable);
@@ -595,14 +595,25 @@ START_TEST(test_check_words_special_misspell)
 	     FILE *fp = fopen(TEMPINPUT, "w+"); 
 	
 	     if (NULL != fp) {
-		for (unsigned int i = 1; i < 256; i++) {
+		// Loop through 3 ranges of non alpha ascii
+		for (unsigned int i = 1; i < 65; i++) {
 	   	     unsigned char theChar = i;
-		     fprintf(fp, "%c%s%c\n ", theChar, "Welcame", theChar);
+		     fprintf(fp, "%c%s%c\n ", theChar, "Welcome", theChar);
+		}
+		for (unsigned int i = 91; i < 97; i++) {
+	   	     unsigned char theChar = i;
+		     fprintf(fp, "%c%s%c\n ", theChar, "Welcome", theChar);
+		}
+		for (unsigned int i = 123; i < 256; i++) {
+	   	     unsigned char theChar = i;
+		     fprintf(fp, "%c%s%c\n ", theChar, "Welcome", theChar);
 		}
 		rewind(fp); // Set file pointer back to start.
 
 		int num_misspelled = check_words(fp, hashtable, misspelled);
-                ck_assert_msg(255 == num_misspelled);
+		
+                ck_assert_msg(0 == num_misspelled);
+		
 
 
 		fclose(fp);
@@ -670,7 +681,7 @@ check_words_suite(void)
     tcase_add_test(check_words_case, test_check_words_hundred_char_multiple_one_word);
     tcase_add_test(check_words_case, test_check_words_hundred_char_multiple_two_word);
     tcase_add_test(check_words_case, test_check_words_special);
-    tcase_add_test(check_words_case, test_check_words_special_misspell);
+    tcase_add_test(check_words_case, test_check_words_special_correct);
     suite_add_tcase(suite, check_words_case);
 
     return suite;
