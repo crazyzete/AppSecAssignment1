@@ -345,6 +345,25 @@ START_TEST(test_check_word_null_inputs)
 END_TEST
 
 /**
+  This tests check_word handling when not finding any words for the word's given hash. Adding this test as a result of a code coverage
+  finding not showing this line hit because the standard wordlist fills most of the buckets. To test this, i will provide an initialized, but 
+  empty hashtable. the word will not match any hashes in the bucket and should return false.
+*/
+START_TEST(test_check_word_empty_hashtable)
+{
+    hashmap_t hashtable[HASH_SIZE];
+    for (int i = 0; i < HASH_SIZE; i++)
+	hashtable[i] = NULL;
+
+    char * word = "empty";
+    	
+    ck_assert(!check_word(word, hashtable));
+    
+
+}
+END_TEST
+
+/**
  This test checks a specific cases with 200 character strings. My code reads in up to 100 charactes and then continues to read blocks o
  100 and throw them away, however, it needs to inspect the next character to determine if it is at a word boundary or not. This is testing
  a specific case i knew I had and already fixed. This verifies 200 characters with a space in the middle is 1 word.
@@ -550,6 +569,38 @@ START_TEST(test_check_words_non_alphanumeric)
 END_TEST
 
 /**
+ Test overflow case where two word several hundred thousand characters is processed and returned as 1 misspelling
+*/
+START_TEST(test_check_words_input_overflow)
+{
+	hashmap_t hashtable[HASH_SIZE];
+	load_dictionary(DICTIONARY, hashtable);
+	char *misspelled[MAX_MISSPELLED];
+	// Rather than a bunch of input files, lets dynamically write the file.
+	// This will open file for read/write, write a test string, and the program will read that string.
+	FILE *fp = fopen(TEMPINPUT, "w+"); 
+	if (NULL != fp) {
+		for (int i = 0; i < 525123; i++)
+		     fprintf(fp, "%c", 'a');
+		fprintf(fp, " ");
+		for (int i = 0; i < 250; i++)
+	             fprintf(fp, "%c", 'b');
+		fprintf(fp, "\n");
+		rewind(fp); // Set file pointer back to start.
+
+		int num_misspelled = check_words(fp, hashtable, misspelled);
+		ck_assert_int_eq(num_misspelled, 2);
+
+		fclose(fp);
+		remove(TEMPINPUT);
+	}
+	else
+	   ck_assert(NULL != fp);
+	
+}
+END_TEST
+
+/**
  This test uses check_words to verify several special characters.
 */
 START_TEST(test_check_words_special)
@@ -660,6 +711,7 @@ check_word_suite(void)
     tcase_add_test(check_word_case, test_check_word_leading_trailing_punct);
     tcase_add_test(check_word_case, test_check_word_numerics);
     tcase_add_test(check_word_case, test_check_word_null_inputs);
+    tcase_add_test(check_word_case, test_check_word_empty_hashtable);
     suite_add_tcase(suite, check_word_case);
 
     return suite;
@@ -682,6 +734,7 @@ check_words_suite(void)
     tcase_add_test(check_words_case, test_check_words_hundred_char_multiple_two_word);
     tcase_add_test(check_words_case, test_check_words_special);
     tcase_add_test(check_words_case, test_check_words_special_correct);
+    tcase_add_test(check_words_case, test_check_words_input_overflow);
     suite_add_tcase(suite, check_words_case);
 
     return suite;
