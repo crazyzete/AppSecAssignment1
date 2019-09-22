@@ -26,8 +26,9 @@ void stringToLower(char * str) {
 int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 
 	int wrongCount = 0;
-		
+	
 	char *readBuffer = NULL;
+
 	char * dumpBuffer = NULL;
 
 	// m modifier automatically allocates sufficent memory
@@ -65,8 +66,22 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 
 			}
 		}
-		
-		//printf("READ BUFFFER: %s\n", readBuffer);
+		//printf("Word: [");
+		// Clear out special characters - only allow ascii
+		int destPos = 0;
+		char tempReadBuffer[strlen(readBuffer)+1];
+		for (int cpos = 0; cpos < strlen(readBuffer); cpos++) {
+		    if (!iscntrl(readBuffer[cpos]) && (readBuffer[cpos] >= 0)) {
+			tempReadBuffer[destPos++] = readBuffer[cpos];
+			//printf("%d\n", tempReadBuffer[destPos-1]);
+		    }
+		}
+		//printf("]\n");
+		tempReadBuffer[destPos] = '\0';
+		strncpy(readBuffer, tempReadBuffer, strlen(tempReadBuffer)+1);
+
+		//printf("READ BUFFFER: [%s] len[%ld]\n", readBuffer,strlen(readBuffer));
+		//printf("READ BUFFER: [%s]\n", readBuffer);		
 		int charpos;
 		int firstAlphaLeft = -1;
 		int firstAlphaRight = -1;
@@ -148,6 +163,10 @@ bool check_word(const char* word, hashmap_t hashtable[]) {
 
 	int hash = abs(hash_function(lowerWord));   // added abs() after fuzzer test showed negative hash possible
 
+	// Guard against off chance off a hash exceeds buffer size.
+	if (hash >= HASH_SIZE)
+		return false;
+
 	hashmap_t hashes = hashtable[hash];
 
 	if (NULL == hashes)  {
@@ -224,7 +243,11 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[]) {
 
 		// Hash word
 		wordhash = abs(hash_function(readword));	// added abs() per fuzzer crash. neg hash possible.
-		
+
+		// Guard against off chance of hash being larger than bufffer size.
+		if (wordhash >= HASH_SIZE)
+			return false; 
+	
 		// Allocate a new node
 		hashmap_t newNode = (hashmap_t) malloc(sizeof(node));
 		if (NULL == newNode)

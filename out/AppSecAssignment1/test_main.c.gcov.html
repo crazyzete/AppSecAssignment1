@@ -1,0 +1,866 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - AppSecAssignment1/test_main.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">AppSecAssignment1</a> - test_main.c<span style="font-size: 80%;"> (source / <a href="test_main.c.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">364</td>
+            <td class="headerCovTableEntry">374</td>
+            <td class="headerCovTableEntryHi">97.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2019-09-21 20:43:38</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &lt;check.h&gt;</a>
+<span class="lineNum">       2 </span>            : #include &quot;dictionary.h&quot;
+<span class="lineNum">       3 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">       4 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">       5 </span>            : #include &lt;ctype.h&gt;
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #define DICTIONARY &quot;wordlist.txt&quot;
+<span class="lineNum">       9 </span>            : #define TESTDICT &quot;test_wordlist.txt&quot;
+<span class="lineNum">      10 </span>            : #define BOGUSDICT &quot;bogus.txt&quot;
+<span class="lineNum">      11 </span>            : #define TEMPDICT &quot;temp_dict.txt&quot;
+<a name="12"><span class="lineNum">      12 </span>            : #define TEMPINPUT &quot;test_tmp.txt&quot;</a>
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span><span class="lineCov">          1 : START_TEST(test_dictionary_load_only)</span>
+<span class="lineNum">      15 </span>            : {
+<span class="lineNum">      16 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">      17 </span><span class="lineCov">          1 :     ck_assert(load_dictionary(TESTDICT, hashtable));</span>
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : }
+<a name="20"><span class="lineNum">      20 </span><span class="lineCov">          1 : END_TEST</span></a>
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span><span class="lineCov">          1 : START_TEST(test_dictionary_file_not_found)</span>
+<span class="lineNum">      23 </span>            : {
+<span class="lineNum">      24 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">      25 </span><span class="lineCov">          1 :     ck_assert(!load_dictionary(BOGUSDICT, hashtable));</span>
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : }
+<a name="28"><span class="lineNum">      28 </span><span class="lineCov">          1 : END_TEST</span></a>
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span><span class="lineCov">          1 : START_TEST(test_dictionary_null_filename)</span>
+<span class="lineNum">      31 </span>            : {
+<span class="lineNum">      32 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">      33 </span><span class="lineCov">          1 :     ck_assert(!load_dictionary(NULL, hashtable));</span>
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : }
+<a name="36"><span class="lineNum">      36 </span><span class="lineCov">          1 : END_TEST</span></a>
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span><span class="lineCov">          1 : START_TEST(test_dictionary_word_overflow)</span>
+<span class="lineNum">      39 </span>            : {
+<span class="lineNum">      40 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span><span class="lineCov">          1 :     const char * longword1 = &quot;helloaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;;</span>
+<span class="lineNum">      43 </span><span class="lineCov">          1 :     const char * longword2 = &quot;specialbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;;</span>
+<span class="lineNum">      44 </span><span class="lineCov">          1 :     const char * normalword = &quot;world&quot;;</span>
+<span class="lineNum">      45 </span><span class="lineCov">          1 :     const char * padding1 = &quot;xxxxxxxxxxxxxxxxxxxxxxx&quot;;</span>
+<span class="lineNum">      46 </span><span class="lineCov">          1 :     const char * padding2 = &quot;yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy&quot;;</span>
+<span class="lineNum">      47 </span>            :    
+<span class="lineNum">      48 </span>            :     // Create temp dictionary and write 3 words to it, including long words.
+<span class="lineNum">      49 </span><span class="lineCov">          1 :     FILE *fp = fopen(TEMPDICT, &quot;w&quot;); </span>
+<span class="lineNum">      50 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">      51 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s%s\n&quot;, longword1, padding1);</span>
+<span class="lineNum">      52 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s\n&quot;, normalword);</span>
+<span class="lineNum">      53 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s%s\n&quot;, longword2, padding2);</span>
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">      56 </span>            :         }
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span><span class="lineCov">          1 :     ck_assert(load_dictionary(TEMPDICT, hashtable));</span>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :     // Remove temp dict file
+<span class="lineNum">      61 </span><span class="lineCov">          1 :     remove(TEMPDICT);</span>
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span><span class="lineCov">          1 :     int hash1 = hash_function(longword1);</span>
+<span class="lineNum">      64 </span><span class="lineCov">          1 :     int hash2 = hash_function(longword2);</span>
+<span class="lineNum">      65 </span><span class="lineCov">          1 :     int hash3 = hash_function(normalword);</span>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            :     // Take the cheap way out and there should be no collisions here,
+<span class="lineNum">      68 </span>            :     // so each of the 3 words should be stored in the first element. The
+<span class="lineNum">      69 </span>            :     // test is that long words do not overflow the buffer and that they
+<span class="lineNum">      70 </span>            :     // are truncated to the longword without the padding
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span><span class="lineCov">          1 :     hashmap_t word1Node = hashtable[hash1];</span>
+<span class="lineNum">      73 </span><span class="lineCov">          1 :     hashmap_t word2Node = hashtable[hash2];</span>
+<span class="lineNum">      74 </span><span class="lineCov">          1 :     hashmap_t word3Node = hashtable[hash3];</span>
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            :     // Check these 3 hash nodes aren't null
+<span class="lineNum">      77 </span><span class="lineCov">          1 :     ck_assert(NULL != word1Node);</span>
+<span class="lineNum">      78 </span><span class="lineCov">          1 :     ck_assert(NULL != word2Node);</span>
+<span class="lineNum">      79 </span><span class="lineCov">          1 :     ck_assert(NULL != word3Node);</span>
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            :     // Check that the next pointer correctly initialized to null
+<span class="lineNum">      82 </span><span class="lineCov">          1 :     ck_assert(NULL == word1Node-&gt;next);</span>
+<span class="lineNum">      83 </span><span class="lineCov">          1 :     ck_assert(NULL == word2Node-&gt;next);</span>
+<span class="lineNum">      84 </span><span class="lineCov">          1 :     ck_assert(NULL == word3Node-&gt;next);</span>
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            :     // Check that the correct word truncating the padding is stored in hash table.
+<span class="lineNum">      87 </span><span class="lineCov">          1 :     ck_assert_msg(strncmp(word1Node-&gt;word, longword1, LENGTH) == 0); </span>
+<span class="lineNum">      88 </span><span class="lineCov">          1 :     ck_assert_msg(strncmp(word2Node-&gt;word, longword2, LENGTH) == 0);</span>
+<span class="lineNum">      89 </span><span class="lineCov">          1 :     ck_assert_msg(strncmp(word3Node-&gt;word, normalword, LENGTH) == 0);</span>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :     
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : }
+<span class="lineNum">      94 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : /**
+<span class="lineNum">      97 </span>            :    This test verifies that a longe word is truncated and not just split and added to dictionary as multiple words.
+<a name="98"><span class="lineNum">      98 </span>            :    Assumes the code is reading blocks of 45 char.</a>
+<span class="lineNum">      99 </span>            : */
+<span class="lineNum">     100 </span><span class="lineCov">          1 : START_TEST(test_dictionary_long_word_truncate)</span>
+<span class="lineNum">     101 </span>            : {
+<span class="lineNum">     102 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineCov">          1 :     const char * longword1 = &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb&quot;;</span>
+<span class="lineNum">     105 </span><span class="lineCov">          1 :     const char * word1 = &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;;</span>
+<span class="lineNum">     106 </span>            :    
+<span class="lineNum">     107 </span>            :     // Create temp dictionary and write 1 long word
+<span class="lineNum">     108 </span><span class="lineCov">          1 :     FILE *fp = fopen(TEMPDICT, &quot;w&quot;); </span>
+<span class="lineNum">     109 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     110 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s\n&quot;, longword1);</span>
+<span class="lineNum">     111 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     112 </span>            :         }
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span><span class="lineCov">          1 :     ck_assert(load_dictionary(TEMPDICT, hashtable));</span>
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            :     // Remove temp dict file
+<span class="lineNum">     117 </span><span class="lineCov">          1 :     remove(TEMPDICT);</span>
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            :     // Confirm only 1 word in hash table and it matches hash of word1
+<span class="lineNum">     120 </span><span class="lineCov">          1 :     int hash1 = hash_function(word1);</span>
+<span class="lineNum">     121 </span><span class="lineCov">          1 :     hashmap_t word1Node = hashtable[hash1];</span>
+<span class="lineNum">     122 </span><span class="lineCov">          1 :     ck_assert(NULL != word1Node);</span>
+<span class="lineNum">     123 </span>            :   
+<span class="lineNum">     124 </span>            :     // Count all the words in dict
+<span class="lineNum">     125 </span><span class="lineCov">          1 :     int wordCount = 0;</span>
+<span class="lineNum">     126 </span><span class="lineCov">       2001 :     for (int i = 0; i &lt; HASH_SIZE; i++)</span>
+<span class="lineNum">     127 </span><span class="lineCov">       2000 :         if (NULL != hashtable[i])</span>
+<span class="lineNum">     128 </span><span class="lineCov">          1 :                 wordCount++;</span>
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span><span class="lineCov">          1 :     ck_assert_int_eq(1, wordCount);</span>
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : }
+<span class="lineNum">     133 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            : /**
+<a name="136"><span class="lineNum">     136 </span>            :    This test verifies that characters after a space on a line are truncated, not considered seperate words if there is no newline.</a>
+<span class="lineNum">     137 </span>            : */
+<span class="lineNum">     138 </span><span class="lineCov">          1 : START_TEST(test_dictionary_truncate_after_space)</span>
+<span class="lineNum">     139 </span>            : {
+<span class="lineNum">     140 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span><span class="lineCov">          1 :     const char * line1 = &quot;the big brown cat is here&quot;;  // 6 words, but only 'the' gets counted on the line.</span>
+<span class="lineNum">     143 </span><span class="lineCov">          1 :     const char * line2 = &quot;sorry i am not counted&quot;;     // only 'sorry' is counted</span>
+<span class="lineNum">     144 </span><span class="lineCov">          1 :     const char * word1 = &quot;the&quot;;</span>
+<span class="lineNum">     145 </span><span class="lineCov">          1 :     const char * word2 = &quot;sorry&quot;;</span>
+<span class="lineNum">     146 </span>            :    
+<span class="lineNum">     147 </span>            :     // Create temp dictionary and write 2 lines
+<span class="lineNum">     148 </span><span class="lineCov">          1 :     FILE *fp = fopen(TEMPDICT, &quot;w&quot;); </span>
+<span class="lineNum">     149 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     150 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s\n%s\n&quot;, line1, line2);</span>
+<span class="lineNum">     151 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     152 </span>            :         }
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span><span class="lineCov">          1 :     ck_assert(load_dictionary(TEMPDICT, hashtable));</span>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            :     // Remove temp dict file
+<span class="lineNum">     157 </span><span class="lineCov">          1 :     remove(TEMPDICT);</span>
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            :     // Confirm only 2word in hash table and it matches hash of word1 and word2
+<span class="lineNum">     160 </span><span class="lineCov">          1 :     int hash1 = hash_function(word1);</span>
+<span class="lineNum">     161 </span><span class="lineCov">          1 :     int hash2 = hash_function(word2);</span>
+<span class="lineNum">     162 </span><span class="lineCov">          1 :     hashmap_t word1Node = hashtable[hash1];</span>
+<span class="lineNum">     163 </span><span class="lineCov">          1 :     hashmap_t word2Node = hashtable[hash2];</span>
+<span class="lineNum">     164 </span><span class="lineCov">          1 :     ck_assert(NULL != word1Node);</span>
+<span class="lineNum">     165 </span><span class="lineCov">          1 :     ck_assert(NULL != word2Node);</span>
+<span class="lineNum">     166 </span>            :   
+<span class="lineNum">     167 </span>            :     // Count all the words in dict
+<span class="lineNum">     168 </span><span class="lineCov">          1 :     int wordCount = 0;</span>
+<span class="lineNum">     169 </span><span class="lineCov">       2001 :     for (int i = 0; i &lt; HASH_SIZE; i++)</span>
+<span class="lineNum">     170 </span><span class="lineCov">       2000 :         if (NULL != hashtable[i])</span>
+<span class="lineNum">     171 </span><span class="lineCov">          2 :                 wordCount++;</span>
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span><span class="lineCov">          1 :     ck_assert_int_eq(2, wordCount);</span>
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            : }
+<span class="lineNum">     176 </span><span class="lineCov">          1 : END_TEST</span>
+<a name="177"><span class="lineNum">     177 </span>            : </a>
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span><span class="lineCov">          1 : START_TEST(test_dictionary_normal_buckets)</span>
+<span class="lineNum">     180 </span>            : {
+<span class="lineNum">     181 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span><span class="lineCov">          1 :     const int NUM_WORDS = 4;</span>
+<span class="lineNum">     184 </span><span class="lineCov">          1 :     char * word[] = {&quot;see&quot;, &quot;spot&quot;, &quot;run&quot;, &quot;tops&quot;};</span>
+<span class="lineNum">     185 </span>            :    
+<span class="lineNum">     186 </span>            :     // Create temp dictionary and write 4 words to itj.
+<span class="lineNum">     187 </span><span class="lineCov">          1 :     FILE *fp = fopen(TEMPDICT, &quot;w&quot;); </span>
+<span class="lineNum">     188 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     189 </span>            :                 int i;
+<span class="lineNum">     190 </span><span class="lineCov">          5 :                 for (i = 0; i &lt; NUM_WORDS; i++)</span>
+<span class="lineNum">     191 </span><span class="lineCov">          4 :                     fprintf(fp, &quot;%s\n&quot;, word[i]);</span>
+<span class="lineNum">     192 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     193 </span>            :         }
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span><span class="lineCov">          1 :     ck_assert(load_dictionary(TEMPDICT, hashtable));</span>
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :     // Remove temp dict file
+<span class="lineNum">     198 </span><span class="lineCov">          1 :     remove(TEMPDICT);</span>
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span><span class="lineCov">          1 :     int hash[NUM_WORDS];</span>
+<span class="lineNum">     201 </span>            :     int i;
+<span class="lineNum">     202 </span><span class="lineCov">          5 :     for (i = 0; i &lt; NUM_WORDS; i++)</span>
+<span class="lineNum">     203 </span><span class="lineCov">          4 :         hash[i] = hash_function(word[i]);</span>
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span><span class="lineCov">          1 :     hashmap_t word1Node = hashtable[hash[0]];</span>
+<span class="lineNum">     206 </span><span class="lineCov">          1 :     hashmap_t word2Node = hashtable[hash[1]]; // Should be same as 4</span>
+<span class="lineNum">     207 </span><span class="lineCov">          1 :     hashmap_t word3Node = hashtable[hash[2]];</span>
+<span class="lineNum">     208 </span><span class="lineCov">          1 :     hashmap_t word4Node = hashtable[hash[3]]; // Should be same as 2</span>
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            :     // Check these 3 hash nodes aren't null
+<span class="lineNum">     211 </span><span class="lineCov">          1 :     ck_assert(NULL != word1Node);</span>
+<span class="lineNum">     212 </span><span class="lineCov">          1 :     ck_assert(NULL != word2Node);</span>
+<span class="lineNum">     213 </span><span class="lineCov">          1 :     ck_assert(NULL != word3Node);</span>
+<span class="lineNum">     214 </span><span class="lineCov">          1 :     ck_assert(NULL != word4Node);</span>
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :     // Check that the next pointer correctly initialized to null
+<span class="lineNum">     217 </span><span class="lineCov">          1 :     ck_assert(NULL == word1Node-&gt;next);</span>
+<span class="lineNum">     218 </span><span class="lineCov">          1 :     ck_assert(NULL == word3Node-&gt;next);</span>
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            :     // Check that Word 2 and Word 4 hashed to the same bucket
+<span class="lineNum">     221 </span><span class="lineCov">          1 :     ck_assert(word2Node == word4Node);</span>
+<span class="lineNum">     222 </span>            : 
+<span class="lineNum">     223 </span>            :     // Check that the correct words are stored in buckets
+<span class="lineNum">     224 </span><span class="lineCov">          1 :     ck_assert_msg(strncmp(word1Node-&gt;word, word[0], LENGTH) == 0);   </span>
+<span class="lineNum">     225 </span><span class="lineCov">          1 :     ck_assert_msg(strncmp(word2Node-&gt;word, word[1], LENGTH) == 0);</span>
+<span class="lineNum">     226 </span><span class="lineCov">          1 :     ck_assert_msg(strncmp(word3Node-&gt;word, word[2], LENGTH) == 0);</span>
+<span class="lineNum">     227 </span><span class="lineCov">          1 :     ck_assert_msg(strncmp(word4Node-&gt;next-&gt;word, word[3], LENGTH) == 0); // Check 2nd entry list in bucket</span>
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :     
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span>            : }
+<a name="232"><span class="lineNum">     232 </span><span class="lineCov">          1 : END_TEST</span></a>
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span><span class="lineCov">          1 : START_TEST(test_dictionary_normal_mixed_case)</span>
+<span class="lineNum">     235 </span>            : {
+<span class="lineNum">     236 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span><span class="lineCov">          1 :     char * word[] = {&quot;ANOTHER&quot;, &quot;One&quot;, &quot;BiTeS&quot;, &quot;thE&quot;, &quot;DUst&quot;, &quot;i'LL&quot;, &quot;BE&quot;, &quot;bAcK&quot;};</span>
+<span class="lineNum">     239 </span><span class="lineCov">          1 :     char * expected[] = {&quot;another&quot;, &quot;one&quot;, &quot;bites&quot;, &quot;the&quot;, &quot;dust&quot;, &quot;i'll&quot;, &quot;be&quot;, &quot;back&quot;};</span>
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span><span class="lineCov">          1 :     const int NUM_WORDS = sizeof(word) / sizeof(word[0]);</span>
+<span class="lineNum">     242 </span>            :    
+<span class="lineNum">     243 </span>            :     // Create temp dictionary and write words to it
+<span class="lineNum">     244 </span><span class="lineCov">          1 :     FILE *fp = fopen(TEMPDICT, &quot;w&quot;); </span>
+<span class="lineNum">     245 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     246 </span>            :                 int i;
+<span class="lineNum">     247 </span><span class="lineCov">          9 :                 for (i = 0; i &lt; NUM_WORDS; i++)</span>
+<span class="lineNum">     248 </span><span class="lineCov">          8 :                     fprintf(fp, &quot;%s\n&quot;, word[i]);</span>
+<span class="lineNum">     249 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     250 </span>            :         }
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span><span class="lineCov">          1 :     ck_assert(load_dictionary(TEMPDICT, hashtable));</span>
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :     // Remove temp dict file
+<span class="lineNum">     255 </span><span class="lineCov">          1 :     remove(TEMPDICT);</span>
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span><span class="lineCov">          1 :     int hash[NUM_WORDS];</span>
+<span class="lineNum">     258 </span><span class="lineCov">          1 :     hashmap_t nodes[NUM_WORDS];</span>
+<span class="lineNum">     259 </span>            :     int i;
+<span class="lineNum">     260 </span><span class="lineCov">          9 :     for (i = 0; i &lt; NUM_WORDS; i++) {</span>
+<span class="lineNum">     261 </span><span class="lineCov">          8 :         hash[i] = hash_function(expected[i]);</span>
+<span class="lineNum">     262 </span><span class="lineCov">          8 :         nodes[i] = hashtable[hash[i]];</span>
+<span class="lineNum">     263 </span><span class="lineCov">          8 :         ck_assert(NULL != nodes[i]);   // Check that node i is not null</span>
+<span class="lineNum">     264 </span><span class="lineCov">          8 :         ck_assert_msg(strncmp(nodes[i]-&gt;word, expected[i], LENGTH) == 0); // Check work is lowercase representation of expected</span>
+<span class="lineNum">     265 </span><span class="lineCov">          8 :         ck_assert(NULL == nodes[i]-&gt;next); // Check the node list for that hash has no other nodes.</span>
+<span class="lineNum">     266 </span>            :     }
+<span class="lineNum">     267 </span>            :     
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            : }
+<span class="lineNum">     270 </span><span class="lineCov">          1 : END_TEST</span>
+<a name="271"><span class="lineNum">     271 </span>            : </a>
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span><span class="lineCov">          1 : START_TEST(test_check_word_normal)</span>
+<span class="lineNum">     274 </span>            : {
+<span class="lineNum">     275 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     276 </span><span class="lineCov">          1 :     load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     277 </span><span class="lineCov">          1 :     const char* correct_word = &quot;Justice&quot;;</span>
+<span class="lineNum">     278 </span><span class="lineCov">          1 :     const char* punctuation_word_2 = &quot;pl.ace&quot;;</span>
+<span class="lineNum">     279 </span><span class="lineCov">          1 :     ck_assert(check_word(correct_word, hashtable));</span>
+<span class="lineNum">     280 </span><span class="lineCov">          1 :     ck_assert(!check_word(punctuation_word_2, hashtable));</span>
+<span class="lineNum">     281 </span>            :     // Test here: What if a word begins and ends with &quot;?
+<span class="lineNum">     282 </span>            : }
+<span class="lineNum">     283 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            : /**
+<span class="lineNum">     286 </span>            :   This tests check_word handling of leading and trailing punctuation. Leading and trailing punctuation should
+<span class="lineNum">     287 </span>            :   be stripped by check_words. check_word merely converts to lowercase and checks the dictionary, so leading and
+<a name="288"><span class="lineNum">     288 </span>            :   trailing punctuation should fail. Certain middle punct such as apostrophe should pass.</a>
+<span class="lineNum">     289 </span>            : */
+<span class="lineNum">     290 </span><span class="lineCov">          1 : START_TEST(test_check_word_leading_trailing_punct)</span>
+<span class="lineNum">     291 </span>            : {
+<span class="lineNum">     292 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     293 </span><span class="lineCov">          1 :     load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     294 </span><span class="lineCov">          1 :     char * correctEmbeddedPunct[] = {&quot;I'll&quot;, &quot;we'll&quot;,&quot;we'd&quot;,&quot;you're&quot;,&quot;can't&quot;,&quot;that's&quot;, &quot;quadrilateral's&quot;};</span>
+<span class="lineNum">     295 </span><span class="lineCov">          1 :     char * incorrectPunct[] = {&quot;,duck&quot;,&quot;?duck&quot;,&quot;duck,&quot;,&quot;duck!&quot;,&quot;duck.&quot;,&quot;d'uck&quot;,&quot;re-use&quot;};</span>
+<span class="lineNum">     296 </span><span class="lineCov">          1 :     const int CHECK_SIZE = sizeof(correctEmbeddedPunct)/sizeof(correctEmbeddedPunct[0]);</span>
+<span class="lineNum">     297 </span>            :     
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            :     int i;
+<span class="lineNum">     300 </span><span class="lineCov">          8 :     for (i = 0; i &lt; CHECK_SIZE; i++) {</span>
+<span class="lineNum">     301 </span><span class="lineCov">          7 :          ck_assert(check_word(correctEmbeddedPunct[i], hashtable));</span>
+<span class="lineNum">     302 </span><span class="lineCov">          7 :          ck_assert(!check_word(incorrectPunct[i], hashtable));</span>
+<span class="lineNum">     303 </span>            :     }
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            : }
+<span class="lineNum">     306 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span>            : /**
+<span class="lineNum">     309 </span>            :   This tests check_word handling of numbers. Numbers should be stripped out prior to check_word and should not be in the
+<span class="lineNum">     310 </span>            :   dictionary, so all leading, trailing, and embedded numbers should fail, including all numerics - should be handled
+<a name="311"><span class="lineNum">     311 </span>            :   by check_word.</a>
+<span class="lineNum">     312 </span>            : */
+<span class="lineNum">     313 </span><span class="lineCov">          1 : START_TEST(test_check_word_numerics)</span>
+<span class="lineNum">     314 </span>            : {
+<span class="lineNum">     315 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     316 </span><span class="lineCov">          1 :     load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     317 </span><span class="lineCov">          1 :     char * incorrect[] = {&quot;1duck&quot;,&quot;2duck3&quot;,&quot;4du5ck6,&quot;,&quot;11duck22&quot;,&quot;123456&quot;,&quot;789ad&quot;,&quot;-123456&quot;,&quot;bc1200&quot;,&quot;a12345b&quot;};</span>
+<span class="lineNum">     318 </span><span class="lineCov">          1 :     const int CHECK_SIZE = sizeof(incorrect)/sizeof(incorrect);</span>
+<span class="lineNum">     319 </span>            :     
+<span class="lineNum">     320 </span>            : 
+<span class="lineNum">     321 </span>            :     int i;
+<span class="lineNum">     322 </span><span class="lineCov">          2 :     for (i = 0; i &lt; CHECK_SIZE; i++) {</span>
+<span class="lineNum">     323 </span><span class="lineCov">          1 :          ck_assert(!check_word(incorrect[i], hashtable));</span>
+<span class="lineNum">     324 </span>            :     }
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : }
+<span class="lineNum">     327 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span>            : /**
+<a name="330"><span class="lineNum">     330 </span>            :   This tests check_word handling of numbers NULL input parameters.</a>
+<span class="lineNum">     331 </span>            : */
+<span class="lineNum">     332 </span><span class="lineCov">          1 : START_TEST(test_check_word_null_inputs)</span>
+<span class="lineNum">     333 </span>            : {
+<span class="lineNum">     334 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     335 </span><span class="lineCov">          1 :     load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     336 </span><span class="lineCov">          1 :     char * word = &quot;duck&quot;;</span>
+<span class="lineNum">     337 </span>            :     
+<span class="lineNum">     338 </span>            :         
+<span class="lineNum">     339 </span><span class="lineCov">          1 :     ck_assert(!check_word(word, NULL));</span>
+<span class="lineNum">     340 </span><span class="lineCov">          1 :     ck_assert(!check_word(NULL, hashtable));</span>
+<span class="lineNum">     341 </span><span class="lineCov">          1 :     ck_assert(!check_word(NULL, NULL));</span>
+<span class="lineNum">     342 </span>            :     
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span>            : }
+<span class="lineNum">     345 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     346 </span>            : 
+<span class="lineNum">     347 </span>            : /**
+<span class="lineNum">     348 </span>            :   This tests check_word handling when not finding any words for the word's given hash. Adding this test as a result of a code coverage
+<span class="lineNum">     349 </span>            :   finding not showing this line hit because the standard wordlist fills most of the buckets. To test this, i will provide an initialized, but 
+<a name="350"><span class="lineNum">     350 </span>            :   empty hashtable. the word will not match any hashes in the bucket and should return false.</a>
+<span class="lineNum">     351 </span>            : */
+<span class="lineNum">     352 </span><span class="lineCov">          1 : START_TEST(test_check_word_empty_hashtable)</span>
+<span class="lineNum">     353 </span>            : {
+<span class="lineNum">     354 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     355 </span><span class="lineCov">       2001 :     for (int i = 0; i &lt; HASH_SIZE; i++)</span>
+<span class="lineNum">     356 </span><span class="lineCov">       2000 :         hashtable[i] = NULL;</span>
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span><span class="lineCov">          1 :     char * word = &quot;empty&quot;;</span>
+<span class="lineNum">     359 </span>            :         
+<span class="lineNum">     360 </span><span class="lineCov">          1 :     ck_assert(!check_word(word, hashtable));</span>
+<span class="lineNum">     361 </span>            :     
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            : }
+<span class="lineNum">     364 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     365 </span>            : 
+<span class="lineNum">     366 </span>            : /**
+<span class="lineNum">     367 </span>            :  This test checks a specific cases with 200 character strings. My code reads in up to 100 charactes and then continues to read blocks o
+<span class="lineNum">     368 </span>            :  100 and throw them away, however, it needs to inspect the next character to determine if it is at a word boundary or not. This is testing
+<a name="369"><span class="lineNum">     369 </span>            :  a specific case i knew I had and already fixed. This verifies 200 characters with a space in the middle is 1 word.</a>
+<span class="lineNum">     370 </span>            : */
+<span class="lineNum">     371 </span><span class="lineCov">          1 : START_TEST(test_check_words_hundred_char_multiple_one_word)</span>
+<span class="lineNum">     372 </span>            : {
+<span class="lineNum">     373 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     374 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     375 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     376 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     377 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     378 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     379 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     380 </span><span class="lineCov">          1 :                 const int CHAR_COUNT = 200;</span>
+<span class="lineNum">     381 </span><span class="lineCov">        201 :                 for (int i = 0; i &lt; CHAR_COUNT; i++) </span>
+<span class="lineNum">     382 </span><span class="lineCov">        200 :                      fprintf(fp, &quot;%c&quot;, 'a');</span>
+<span class="lineNum">     383 </span><span class="lineCov">          1 :                 fprintf(fp,&quot;%c&quot;,'\n');</span>
+<span class="lineNum">     384 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     387 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 1); // one long string of a's should be misspelled</span>
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     390 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     391 </span>            :         }
+<span class="lineNum">     392 </span>            :         else
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     394 </span>            :         
+<span class="lineNum">     395 </span>            : }
+<span class="lineNum">     396 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            : /**
+<span class="lineNum">     399 </span>            :  This test checks a specific cases with 200 character strings. My code reads in up to 100 charactes and then continues to read blocks o
+<span class="lineNum">     400 </span>            :  100 and throw them away, however, it needs to inspect the next character to determine if it is at a word boundary or not. This is testing
+<a name="401"><span class="lineNum">     401 </span>            :  a specific case i knew I had and already fixed. This verified 200 characters with a space in the middle is 2 words.</a>
+<span class="lineNum">     402 </span>            : */
+<span class="lineNum">     403 </span><span class="lineCov">          1 : START_TEST(test_check_words_hundred_char_multiple_two_word)</span>
+<span class="lineNum">     404 </span>            : {
+<span class="lineNum">     405 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     406 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     407 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     408 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     409 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     410 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     411 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     412 </span><span class="lineCov">          1 :                 const int CHAR_COUNT = 200;</span>
+<span class="lineNum">     413 </span><span class="lineCov">        200 :                 for (int i = 0; i &lt; CHAR_COUNT-1; i++) {</span>
+<span class="lineNum">     414 </span><span class="lineCov">        199 :                      if ((CHAR_COUNT/2 == i)) </span>
+<span class="lineNum">     415 </span><span class="lineCov">          1 :                         fprintf(fp, &quot;%c&quot;,' ');</span>
+<span class="lineNum">     416 </span>            :                      else
+<span class="lineNum">     417 </span><span class="lineCov">        198 :                         fprintf(fp, &quot;%c&quot;, 'a');</span>
+<span class="lineNum">     418 </span>            :                 }       
+<span class="lineNum">     419 </span><span class="lineCov">          1 :                 fprintf(fp,&quot;%c&quot;,'\n');</span>
+<span class="lineNum">     420 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     423 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 2); // one long string of a's should be misspelled</span>
+<span class="lineNum">     424 </span>            : 
+<span class="lineNum">     425 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     426 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     427 </span>            :         }
+<span class="lineNum">     428 </span>            :         else
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     430 </span>            : }
+<span class="lineNum">     431 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     432 </span>            : 
+<span class="lineNum">     433 </span>            : /**
+<span class="lineNum">     434 </span>            :  This test uses check_words to verify a single word with multiple punctuation marks before the word results in
+<a name="435"><span class="lineNum">     435 </span>            :  the punctuation stripped and no misspellings.</a>
+<span class="lineNum">     436 </span>            : */
+<span class="lineNum">     437 </span><span class="lineCov">          1 : START_TEST(test_check_words_before_punct)</span>
+<span class="lineNum">     438 </span>            : {
+<span class="lineNum">     439 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     440 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     441 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     442 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     443 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     444 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     445 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     446 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s&quot;, &quot;,(hello&quot;);</span>
+<span class="lineNum">     447 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     448 </span>            : 
+<span class="lineNum">     449 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     450 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 0);</span>
+<span class="lineNum">     451 </span>            : 
+<span class="lineNum">     452 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     453 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     454 </span>            :         }
+<span class="lineNum">     455 </span>            :         else
+<span class="lineNum">     456 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     457 </span>            :         
+<span class="lineNum">     458 </span>            : }
+<span class="lineNum">     459 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     460 </span>            : 
+<span class="lineNum">     461 </span>            : /**
+<span class="lineNum">     462 </span>            :  This test uses check_words to verify a single word with multiple punctuation marks after the word results in
+<a name="463"><span class="lineNum">     463 </span>            :  the punctuation stripped and no misspellings.</a>
+<span class="lineNum">     464 </span>            : */
+<span class="lineNum">     465 </span><span class="lineCov">          1 : START_TEST(test_check_words_after_punct)</span>
+<span class="lineNum">     466 </span>            : {
+<span class="lineNum">     467 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     468 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     469 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     470 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     471 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     472 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     473 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     474 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s&quot;, &quot;hello?!?,&quot;);</span>
+<span class="lineNum">     475 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     476 </span>            : 
+<span class="lineNum">     477 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     478 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 0);</span>
+<span class="lineNum">     479 </span>            : 
+<span class="lineNum">     480 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     481 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     482 </span>            :         }
+<span class="lineNum">     483 </span>            :         else
+<span class="lineNum">     484 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     485 </span>            :         
+<span class="lineNum">     486 </span>            : }
+<span class="lineNum">     487 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     488 </span>            : 
+<span class="lineNum">     489 </span>            : /**
+<span class="lineNum">     490 </span>            :  This test uses check_words to verify a single word with multiple punctuation marks after the word results in
+<a name="491"><span class="lineNum">     491 </span>            :  the punctuation stripped and no misspellings.</a>
+<span class="lineNum">     492 </span>            : */
+<span class="lineNum">     493 </span><span class="lineCov">          1 : START_TEST(test_check_words_before_and_after_punct)</span>
+<span class="lineNum">     494 </span>            : {
+<span class="lineNum">     495 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     496 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     497 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     498 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     499 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     500 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     501 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     502 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s&quot;, &quot;,(----hello----)?!.&quot;);</span>
+<span class="lineNum">     503 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     504 </span>            : 
+<span class="lineNum">     505 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     506 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 0);</span>
+<span class="lineNum">     507 </span>            : 
+<span class="lineNum">     508 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     509 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     510 </span>            :         }
+<span class="lineNum">     511 </span>            :         else
+<span class="lineNum">     512 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     513 </span>            :         
+<span class="lineNum">     514 </span>            : }
+<span class="lineNum">     515 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span>            : /**
+<a name="518"><span class="lineNum">     518 </span>            :  This test uses check_words to verify several numeric values passes.</a>
+<span class="lineNum">     519 </span>            : */
+<span class="lineNum">     520 </span><span class="lineCov">          1 : START_TEST(test_check_words_numeric)</span>
+<span class="lineNum">     521 </span>            : {
+<span class="lineNum">     522 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     523 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     524 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     525 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     526 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     527 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     528 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     529 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s&quot;, &quot;$100,000 50.75 -109.3 -$80.234 3.14159 -56.35E65 -2 0 0.00 12345,67890 59.65%&quot;);</span>
+<span class="lineNum">     530 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     531 </span>            : 
+<span class="lineNum">     532 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     533 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 0);</span>
+<span class="lineNum">     534 </span>            : 
+<span class="lineNum">     535 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     536 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     537 </span>            :         }
+<span class="lineNum">     538 </span>            :         else
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     540 </span>            :         
+<span class="lineNum">     541 </span>            : }
+<span class="lineNum">     542 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            : /**
+<a name="545"><span class="lineNum">     545 </span>            :  This test uses check_words to verify several non-alphanmeric passes.</a>
+<span class="lineNum">     546 </span>            : */
+<span class="lineNum">     547 </span><span class="lineCov">          1 : START_TEST(test_check_words_non_alphanumeric)</span>
+<span class="lineNum">     548 </span>            : {
+<span class="lineNum">     549 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     550 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     551 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     552 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     553 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     554 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     555 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     556 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;%s&quot;, &quot;$$ / - ()^&amp;% % -- ******** '' '' @# ^&amp; == ~`-_++/,. &lt;&gt; ; '&quot;);</span>
+<span class="lineNum">     557 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     558 </span>            : 
+<span class="lineNum">     559 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     560 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 0);</span>
+<span class="lineNum">     561 </span>            : 
+<span class="lineNum">     562 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     563 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     564 </span>            :         }
+<span class="lineNum">     565 </span>            :         else
+<span class="lineNum">     566 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     567 </span>            :         
+<span class="lineNum">     568 </span>            : }
+<span class="lineNum">     569 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     570 </span>            : 
+<span class="lineNum">     571 </span>            : /**
+<a name="572"><span class="lineNum">     572 </span>            :  Test overflow case where two word several hundred thousand characters is processed and returned as 1 misspelling</a>
+<span class="lineNum">     573 </span>            : */
+<span class="lineNum">     574 </span><span class="lineCov">          1 : START_TEST(test_check_words_input_overflow)</span>
+<span class="lineNum">     575 </span>            : {
+<span class="lineNum">     576 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     577 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     578 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     579 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     580 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     581 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     582 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     583 </span><span class="lineCov">     525124 :                 for (int i = 0; i &lt; 525123; i++)</span>
+<span class="lineNum">     584 </span><span class="lineCov">     525123 :                      fprintf(fp, &quot;%c&quot;, 'a');</span>
+<span class="lineNum">     585 </span><span class="lineCov">          1 :                 fprintf(fp, &quot; &quot;);</span>
+<span class="lineNum">     586 </span><span class="lineCov">        251 :                 for (int i = 0; i &lt; 250; i++)</span>
+<span class="lineNum">     587 </span><span class="lineCov">        250 :                      fprintf(fp, &quot;%c&quot;, 'b');</span>
+<span class="lineNum">     588 </span><span class="lineCov">          1 :                 fprintf(fp, &quot;\n&quot;);</span>
+<span class="lineNum">     589 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     590 </span>            : 
+<span class="lineNum">     591 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     592 </span><span class="lineCov">          1 :                 ck_assert_int_eq(num_misspelled, 2);</span>
+<span class="lineNum">     593 </span>            : 
+<span class="lineNum">     594 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     595 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     596 </span>            :         }
+<span class="lineNum">     597 </span>            :         else
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     599 </span>            :         
+<span class="lineNum">     600 </span>            : }
+<span class="lineNum">     601 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     602 </span>            : 
+<span class="lineNum">     603 </span>            : /**
+<a name="604"><span class="lineNum">     604 </span>            :  This test uses check_words to verify several special characters.</a>
+<span class="lineNum">     605 </span>            : */
+<span class="lineNum">     606 </span><span class="lineCov">          1 : START_TEST(test_check_words_special)</span>
+<span class="lineNum">     607 </span>            : {
+<span class="lineNum">     608 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     609 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     610 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     611 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     612 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     613 </span><span class="lineCov">          1 :         FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     614 </span><span class="lineCov">          1 :         if (NULL != fp) {</span>
+<span class="lineNum">     615 </span>            :                 unsigned char theChar;
+<span class="lineNum">     616 </span>            :                 // Loop and write a byte followed by a space. Loop through all 1 byte values.
+<span class="lineNum">     617 </span><span class="lineCov">        256 :                 for (unsigned int i = 0; i &lt; 255; i++) {</span>
+<span class="lineNum">     618 </span><span class="lineCov">        255 :                      theChar = i;</span>
+<span class="lineNum">     619 </span><span class="lineCov">        255 :                      fprintf(fp, &quot;%c &quot;, theChar);</span>
+<span class="lineNum">     620 </span>            :                 }
+<span class="lineNum">     621 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     622 </span>            : 
+<span class="lineNum">     623 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     624 </span><span class="lineCov">          1 :                 ck_assert(num_misspelled == 0);</span>
+<span class="lineNum">     625 </span>            : 
+<span class="lineNum">     626 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     627 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     628 </span>            :         }
+<span class="lineNum">     629 </span>            :         else
+<span class="lineNum">     630 </span><span class="lineNoCov">          0 :            ck_assert(NULL != fp);</span>
+<span class="lineNum">     631 </span>            :         
+<span class="lineNum">     632 </span>            : }
+<span class="lineNum">     633 </span><span class="lineCov">          1 : END_TEST</span>
+<span class="lineNum">     634 </span>            : 
+<span class="lineNum">     635 </span>            : /**
+<a name="636"><span class="lineNum">     636 </span>            :  This test uses check_words to verify several special characters surrounding a correctly word do not cause the word to be incorrectly reported as misspelled.</a>
+<span class="lineNum">     637 </span>            : */
+<span class="lineNum">     638 </span><span class="lineCov">          1 : START_TEST(test_check_words_special_correct)</span>
+<span class="lineNum">     639 </span>            : {
+<span class="lineNum">     640 </span>            :         hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     641 </span><span class="lineCov">          1 :         load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     642 </span>            :         char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     643 </span>            :         // Rather than a bunch of input files, lets dynamically write the file.
+<span class="lineNum">     644 </span>            :         // This will open file for read/write, write a test string, and the program will read that string.
+<span class="lineNum">     645 </span>            : 
+<span class="lineNum">     646 </span><span class="lineCov">          1 :              FILE *fp = fopen(TEMPINPUT, &quot;w+&quot;); </span>
+<span class="lineNum">     647 </span>            :         
+<span class="lineNum">     648 </span><span class="lineCov">          1 :              if (NULL != fp) {</span>
+<span class="lineNum">     649 </span>            :                 // Loop through 3 ranges of non alpha ascii
+<span class="lineNum">     650 </span><span class="lineCov">         65 :                 for (unsigned int i = 1; i &lt; 65; i++) {</span>
+<span class="lineNum">     651 </span><span class="lineCov">         64 :                      unsigned char theChar = i;</span>
+<span class="lineNum">     652 </span><span class="lineCov">         64 :                      fprintf(fp, &quot;%c%s%c\n &quot;, theChar, &quot;Welcome&quot;, theChar);</span>
+<span class="lineNum">     653 </span>            :                 }
+<span class="lineNum">     654 </span><span class="lineCov">          7 :                 for (unsigned int i = 91; i &lt; 97; i++) {</span>
+<span class="lineNum">     655 </span><span class="lineCov">          6 :                      unsigned char theChar = i;</span>
+<span class="lineNum">     656 </span><span class="lineCov">          6 :                      fprintf(fp, &quot;%c%s%c\n &quot;, theChar, &quot;Welcome&quot;, theChar);</span>
+<span class="lineNum">     657 </span>            :                 }
+<span class="lineNum">     658 </span><span class="lineCov">        134 :                 for (unsigned int i = 123; i &lt; 256; i++) {</span>
+<span class="lineNum">     659 </span><span class="lineCov">        133 :                      unsigned char theChar = i;</span>
+<span class="lineNum">     660 </span><span class="lineCov">        133 :                      fprintf(fp, &quot;%c%s%c\n &quot;, theChar, &quot;Welcome&quot;, theChar);</span>
+<span class="lineNum">     661 </span>            :                 }
+<span class="lineNum">     662 </span><span class="lineCov">          1 :                 rewind(fp); // Set file pointer back to start.</span>
+<span class="lineNum">     663 </span>            : 
+<span class="lineNum">     664 </span><span class="lineCov">          1 :                 int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     665 </span>            :                 
+<span class="lineNum">     666 </span><span class="lineCov">          1 :                 ck_assert_msg(0 == num_misspelled);</span>
+<span class="lineNum">     667 </span>            :                 
+<span class="lineNum">     668 </span>            : 
+<span class="lineNum">     669 </span>            : 
+<span class="lineNum">     670 </span><span class="lineCov">          1 :                 fclose(fp);</span>
+<span class="lineNum">     671 </span><span class="lineCov">          1 :                 remove(TEMPINPUT);</span>
+<span class="lineNum">     672 </span>            :              }
+<span class="lineNum">     673 </span>            :              else
+<span class="lineNum">     674 </span><span class="lineNoCov">          0 :                 ck_assert(NULL != fp);</span>
+<span class="lineNum">     675 </span>            :         
+<span class="lineNum">     676 </span>            :         
+<span class="lineNum">     677 </span>            :         
+<span class="lineNum">     678 </span>            : }
+<a name="679"><span class="lineNum">     679 </span><span class="lineCov">          1 : END_TEST</span></a>
+<span class="lineNum">     680 </span>            : 
+<span class="lineNum">     681 </span><span class="lineCov">          1 : START_TEST(test_check_words_normal)</span>
+<span class="lineNum">     682 </span>            : {
+<span class="lineNum">     683 </span>            :     hashmap_t hashtable[HASH_SIZE];
+<span class="lineNum">     684 </span><span class="lineCov">          1 :     load_dictionary(DICTIONARY, hashtable);</span>
+<span class="lineNum">     685 </span>            :     char* expected[3];
+<span class="lineNum">     686 </span><span class="lineCov">          1 :     expected[0] = &quot;sogn&quot;;</span>
+<span class="lineNum">     687 </span><span class="lineCov">          1 :     expected[1] = &quot;skyn&quot;;</span>
+<span class="lineNum">     688 </span><span class="lineCov">          1 :     expected[2] = &quot;betta&quot;;</span>
+<span class="lineNum">     689 </span>            :     char *misspelled[MAX_MISSPELLED];
+<span class="lineNum">     690 </span><span class="lineCov">          1 :     FILE *fp = fopen(&quot;test1.txt&quot;, &quot;r&quot;);</span>
+<span class="lineNum">     691 </span><span class="lineCov">          1 :     int num_misspelled = check_words(fp, hashtable, misspelled);</span>
+<span class="lineNum">     692 </span><span class="lineCov">          1 :     ck_assert(num_misspelled == 3);</span>
+<span class="lineNum">     693 </span><span class="lineCov">          1 :     bool test = strlen(misspelled[0]) == strlen(expected[0]);</span>
+<span class="lineNum">     694 </span><span class="lineCov">          1 :     int len1 = strlen(misspelled[0]);</span>
+<span class="lineNum">     695 </span><span class="lineCov">          1 :     int len2 = strlen(expected[0]);</span>
+<span class="lineNum">     696 </span><span class="lineCov">          1 :     ck_assert_msg(test, &quot;%d!=%d&quot;, len1, len2);</span>
+<span class="lineNum">     697 </span><span class="lineCov">          1 :     ck_assert_msg(strcmp(misspelled[0], expected[0]) == 0);</span>
+<span class="lineNum">     698 </span><span class="lineCov">          1 :     ck_assert_msg(strcmp(misspelled[1], expected[1]) == 0);</span>
+<span class="lineNum">     699 </span><span class="lineCov">          1 :     ck_assert_msg(strcmp(misspelled[2], expected[2]) == 0);</span>
+<span class="lineNum">     700 </span>            : }
+<span class="lineNum">     701 </span><span class="lineCov">          1 : END_TEST</span>
+<a name="702"><span class="lineNum">     702 </span>            : </a>
+<span class="lineNum">     703 </span>            : Suite *
+<span class="lineNum">     704 </span><span class="lineCov">         25 : check_word_suite(void)</span>
+<span class="lineNum">     705 </span>            : {
+<span class="lineNum">     706 </span>            :     Suite * suite;
+<span class="lineNum">     707 </span>            :     TCase * check_word_case;
+<span class="lineNum">     708 </span><span class="lineCov">         25 :     suite = suite_create(&quot;check_word&quot;);</span>
+<span class="lineNum">     709 </span><span class="lineCov">         25 :     check_word_case = tcase_create(&quot;Core&quot;);</span>
+<span class="lineNum">     710 </span><span class="lineCov">         25 :     tcase_add_test(check_word_case, test_check_word_normal);</span>
+<span class="lineNum">     711 </span><span class="lineCov">         25 :     tcase_add_test(check_word_case, test_check_word_leading_trailing_punct);</span>
+<span class="lineNum">     712 </span><span class="lineCov">         25 :     tcase_add_test(check_word_case, test_check_word_numerics);</span>
+<span class="lineNum">     713 </span><span class="lineCov">         25 :     tcase_add_test(check_word_case, test_check_word_null_inputs);</span>
+<span class="lineNum">     714 </span><span class="lineCov">         25 :     tcase_add_test(check_word_case, test_check_word_empty_hashtable);</span>
+<span class="lineNum">     715 </span><span class="lineCov">         25 :     suite_add_tcase(suite, check_word_case);</span>
+<span class="lineNum">     716 </span>            : 
+<span class="lineNum">     717 </span><span class="lineCov">         25 :     return suite;</span>
+<span class="lineNum">     718 </span>            : }
+<a name="719"><span class="lineNum">     719 </span>            : </a>
+<span class="lineNum">     720 </span>            : Suite *
+<span class="lineNum">     721 </span><span class="lineCov">         25 : check_words_suite(void)</span>
+<span class="lineNum">     722 </span>            : {
+<span class="lineNum">     723 </span>            :     Suite * suite;
+<span class="lineNum">     724 </span>            :     TCase * check_words_case;
+<span class="lineNum">     725 </span><span class="lineCov">         25 :     suite = suite_create(&quot;check_words&quot;);</span>
+<span class="lineNum">     726 </span><span class="lineCov">         25 :     check_words_case = tcase_create(&quot;Core&quot;);</span>
+<span class="lineNum">     727 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_normal);</span>
+<span class="lineNum">     728 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_numeric);</span>
+<span class="lineNum">     729 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_non_alphanumeric);</span>
+<span class="lineNum">     730 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_before_punct);</span>
+<span class="lineNum">     731 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_after_punct);</span>
+<span class="lineNum">     732 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_before_and_after_punct);</span>
+<span class="lineNum">     733 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_hundred_char_multiple_one_word);</span>
+<span class="lineNum">     734 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_hundred_char_multiple_two_word);</span>
+<span class="lineNum">     735 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_special);</span>
+<span class="lineNum">     736 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_special_correct);</span>
+<span class="lineNum">     737 </span><span class="lineCov">         25 :     tcase_add_test(check_words_case, test_check_words_input_overflow);</span>
+<span class="lineNum">     738 </span><span class="lineCov">         25 :     suite_add_tcase(suite, check_words_case);</span>
+<span class="lineNum">     739 </span>            : 
+<span class="lineNum">     740 </span><span class="lineCov">         25 :     return suite;</span>
+<span class="lineNum">     741 </span>            : }
+<a name="742"><span class="lineNum">     742 </span>            : </a>
+<span class="lineNum">     743 </span>            : Suite *
+<span class="lineNum">     744 </span><span class="lineCov">         25 : load_dictionary_suite(void)</span>
+<span class="lineNum">     745 </span>            : {
+<span class="lineNum">     746 </span>            :     Suite * suite;
+<span class="lineNum">     747 </span>            :     TCase * check_dict_case;
+<span class="lineNum">     748 </span><span class="lineCov">         25 :     suite = suite_create(&quot;load_dictionary&quot;);</span>
+<span class="lineNum">     749 </span><span class="lineCov">         25 :     check_dict_case = tcase_create(&quot;Core&quot;);</span>
+<span class="lineNum">     750 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_load_only);</span>
+<span class="lineNum">     751 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_file_not_found);</span>
+<span class="lineNum">     752 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_null_filename);</span>
+<span class="lineNum">     753 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_word_overflow);</span>
+<span class="lineNum">     754 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_normal_buckets);</span>
+<span class="lineNum">     755 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_normal_mixed_case);</span>
+<span class="lineNum">     756 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_long_word_truncate);</span>
+<span class="lineNum">     757 </span><span class="lineCov">         25 :     tcase_add_test(check_dict_case, test_dictionary_truncate_after_space);</span>
+<span class="lineNum">     758 </span><span class="lineCov">         25 :     suite_add_tcase(suite, check_dict_case);</span>
+<span class="lineNum">     759 </span>            : 
+<span class="lineNum">     760 </span><span class="lineCov">         25 :     return suite;</span>
+<span class="lineNum">     761 </span>            : }
+<a name="762"><span class="lineNum">     762 </span>            : </a>
+<span class="lineNum">     763 </span>            : int
+<span class="lineNum">     764 </span><span class="lineCov">         25 : main(void)</span>
+<span class="lineNum">     765 </span>            : {
+<span class="lineNum">     766 </span>            :     int failed;
+<span class="lineNum">     767 </span>            :     Suite *suite;
+<span class="lineNum">     768 </span>            :     SRunner *runner;
+<span class="lineNum">     769 </span>            :     
+<span class="lineNum">     770 </span>            :     // Initial suite
+<span class="lineNum">     771 </span><span class="lineCov">         25 :     suite = check_word_suite();</span>
+<span class="lineNum">     772 </span><span class="lineCov">         25 :     runner = srunner_create(suite);</span>
+<span class="lineNum">     773 </span>            :     
+<span class="lineNum">     774 </span>            :     // Add Check Words suite
+<span class="lineNum">     775 </span><span class="lineCov">         25 :     suite = check_words_suite();</span>
+<span class="lineNum">     776 </span><span class="lineCov">         25 :     srunner_add_suite(runner, suite);</span>
+<span class="lineNum">     777 </span>            : 
+<span class="lineNum">     778 </span>            :     // Add Load Dictionary Suite
+<span class="lineNum">     779 </span><span class="lineCov">         25 :     suite = load_dictionary_suite();</span>
+<span class="lineNum">     780 </span><span class="lineCov">         25 :     srunner_add_suite(runner, suite);   </span>
+<span class="lineNum">     781 </span>            : 
+<span class="lineNum">     782 </span><span class="lineCov">         25 :     srunner_run_all(runner, CK_NORMAL);</span>
+<span class="lineNum">     783 </span><span class="lineCov">          1 :     failed = srunner_ntests_failed(runner);</span>
+<span class="lineNum">     784 </span><span class="lineCov">          1 :     srunner_free(runner);</span>
+<span class="lineNum">     785 </span>            : 
+<span class="lineNum">     786 </span>            : 
+<span class="lineNum">     787 </span>            : 
+<span class="lineNum">     788 </span><span class="lineCov">          1 :     return (failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE);</span>
+<span class="lineNum">     789 </span>            : }
+<span class="lineNum">     790 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
