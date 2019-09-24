@@ -127,8 +127,14 @@ int check_words(FILE* fp, hashmap_t hashtable[], char * misspelled[]) {
 			translateBuffer[bytesToCopy] = '\0';
 
 			if (truncated || (!check_word(translateBuffer, hashtable))) {
-			    
+
+			     // Bound maximum returns to size of misspelled. If more than that just free.
+			     if (wrongCount < MAX_MISSPELLED) {
 				misspelled[wrongCount++] = translateBuffer;
+			      }
+			     else {
+				free(translateBuffer);
+			     }
 				
 			    
 			} 
