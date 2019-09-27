@@ -6,7 +6,21 @@ extern node* hashtable[HASH_SIZE];
 
 int main( int argc, const char* argv[] )
 {
-	printf("Entered Main\n");
+	printf("Main\n");
+	
+	/*FILE *wordlist;
+	wordlist = fopen("wordlist.txt", "r");
+
+ 	if(wordlist == NULL)
+  	 {
+      		printf("Error!");   
+      		exit(1);             
+   	}
+	*/
+
+
+	//hashmap_t hasht[HASH_SIZE];
+	//char * misspelled[5000];
 	
 	bool loaded = load_dictionary(argv[2], hashtable);
 
@@ -24,7 +38,7 @@ int main( int argc, const char* argv[] )
       		return -1;             
    	}
 
-	char * spellErrors[MAX_MISSPELLED];
+	char * spellErrors[5000];
 	int errors;
 	errors = check_words(text, hashtable, spellErrors);
 
@@ -61,5 +75,5 @@ int main( int argc, const char* argv[] )
 		
 
 
-	printf("Exit Main\n");
+	printf("End Main\n");
 }
